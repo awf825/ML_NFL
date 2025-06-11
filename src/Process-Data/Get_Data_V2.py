@@ -15,6 +15,7 @@ import time
 from datetime import date, datetime, timedelta
 from urllib.request import Request, urlopen
 import pandas as pd
+import numpy as np
 from bs4 import BeautifulSoup, Comment
 
 from abbrev import team_abbrev_index
@@ -196,66 +197,263 @@ for year in years:
                         # to get sos, get the win pct of each team and use it for sos of the other team
                         table = pd.read_sql(f"SELECT name FROM sqlite_master WHERE type='table' AND name=\"teams_{year}\"", teams_con)
                         if table.empty:
-                            AWAY_SOS = 0.0
-                            HOME_SOS = 0.0
+                            # if this table is empty, this data will never be available to any team
+                            AWAY_SOS_GAME = -1
+                            HOME_SOS_GAME = -1
+                            AWAY_FD_MEAN = -1 
+                            AWAY_FD_STD = -1
+                            AWAY_FD_MAX = -1
+                            AWAY_FD_MIN = -1
+                            AWAY_FD_AGAINST_MEAN = -1
+                            AWAY_FD_AGAINST_STD = -1
+                            AWAY_FD_AGAINST_MAX = -1
+                            AWAY_FD_AGAINST_MIN = -1
+                            AWAY_SACKS_MEAN = -1 
+                            AWAY_SACKS_STD = -1
+                            AWAY_SACKS_MAX = -1
+                            AWAY_SACKS_MIN = -1
+                            AWAY_SACKS_AGAINST_MEAN = -1 
+                            AWAY_SACKS_AGAINST_STD = -1
+                            AWAY_SACKS_AGAINST_MAX = -1
+                            AWAY_SACKS_AGAINST_MIN = -1
+                            AWAY_SACK_YDS_MEAN = -1 
+                            AWAY_SACK_YDS_STD = -1
+                            AWAY_SACK_YDS_MAX = -1
+                            AWAY_SACK_YDS_MIN = -1
+                            AWAY_SACK_YDS_AGAINST_MEAN = -1 
+                            AWAY_SACK_YDS_AGAINST_STD = -1
+                            AWAY_SACK_YDS_AGAINST_MAX = -1
+                            AWAY_SACK_YDS_AGAINST_MIN = -1
+                            AWAY_TOTAL_YDS_MEAN = -1 
+                            AWAY_TOTAL_YDS_STD = -1
+                            AWAY_TOTAL_YDS_MAX = -1
+                            AWAY_TOTAL_YDS_MIN = -1
+                            AWAY_FUMBLES_MEAN = -1 
+                            AWAY_FUMBLES_STD = -1
+                            AWAY_FUMBLES_MAX = -1
+                            AWAY_FUMBLES_MIN = -1
+                            AWAY_FUMBLES_LOST_MEAN = -1 
+                            AWAY_FUMBLES_LOST_STD = -1
+                            AWAY_FUMBLES_LOST_MAX = -1
+                            AWAY_FUMBLES_LOST_MIN = -1
+                            AWAY_TO_MEAN = -1 
+                            AWAY_TO_STD = -1
+                            AWAY_TO_MAX = -1
+                            AWAY_TO_MIN = -1
+                            AWAY_TO_AGAINST_MEAN = -1 
+                            AWAY_TO_AGAINST_STD = -1
+                            AWAY_TO_AGAINST_MAX = -1
+                            AWAY_TO_AGAINST_MIN = -1
+                            AWAY_PENALTIES_MEAN = -1 
+                            AWAY_PENALTIES_STD = -1
+                            AWAY_PENALTIES_MAX = -1
+                            AWAY_PENALTIES_MIN = -1
+                            AWAY_PENALTY_YARDS_MEAN = -1 
+                            AWAY_PENALTY_YARDS_STD = -1
+                            AWAY_PENALTY_YARDS_MAX = -1
+                            AWAY_PENALTY_YARDS_MIN = -1
+                            AWAY_3RD_DOWN_MEAN = -1 
+                            AWAY_3RD_DOWN_STD = -1
+                            AWAY_3RD_DOWN_MAX = -1
+                            AWAY_3RD_DOWN_MIN = -1
+                            AWAY_3RD_DOWN_ATT_MEAN = -1 
+                            AWAY_3RD_DOWN_ATT_STD = -1
+                            AWAY_3RD_DOWN_ATT_MAX = -1
+                            AWAY_3RD_DOWN_ATT_MIN = -1
+                            AWAY_3RD_DOWN_CONV_MEAN = -1 
+                            AWAY_3RD_DOWN_CONV_STD = -1
+                            AWAY_3RD_DOWN_CONV_MAX = -1
+                            AWAY_3RD_DOWN_CONV_MIN = -1
+                            AWAY_3RD_DOWN_AGAINST_MEAN = -1
+                            AWAY_3RD_DOWN_AGAINST_STD = -1
+                            AWAY_3RD_DOWN_AGAINST_MAX = -1
+                            AWAY_3RD_DOWN_AGAINST_MIN = -1
+                            AWAY_3RD_DOWN_ATT_AGAINST_MEAN = -1
+                            AWAY_3RD_DOWN_ATT_AGAINST_STD = -1
+                            AWAY_3RD_DOWN_ATT_AGAINST_MAX = -1
+                            AWAY_3RD_DOWN_ATT_AGAINST_MIN = -1
+                            AWAY_3RD_DOWN_CONV_AGAINST_MEAN = -1
+                            AWAY_3RD_DOWN_CONV_AGAINST_STD = -1
+                            AWAY_3RD_DOWN_CONV_AGAINST_MAX = -1
+                            AWAY_3RD_DOWN_CONV_AGAINST_MIN = -1
+                            AWAY_TOP_MEAN = -1 
+                            AWAY_TOP_STD = -1
+                            AWAY_TOP_MAX = -1
+                            AWAY_TOP_MIN = -1 
+                            HOME_FD_MEAN = -1 
+                            HOME_FD_STD = -1
+                            HOME_FD_MAX = -1
+                            HOME_FD_MIN = -1
+                            HOME_FD_AGAINST_MEAN = -1
+                            HOME_FD_AGAINST_STD = -1
+                            HOME_FD_AGAINST_MAX = -1
+                            HOME_FD_AGAINST_MIN = -1
+                            HOME_SACKS_MEAN = -1 
+                            HOME_SACKS_STD = -1
+                            HOME_SACKS_MAX = -1
+                            HOME_SACKS_MIN = -1
+                            HOME_SACKS_AGAINST_MEAN = -1 
+                            HOME_SACKS_AGAINST_STD = -1
+                            HOME_SACKS_AGAINST_MAX = -1
+                            HOME_SACKS_AGAINST_MIN = -1
+                            HOME_SACK_YDS_MEAN = -1 
+                            HOME_SACK_YDS_STD = -1
+                            HOME_SACK_YDS_MAX = -1
+                            HOME_SACK_YDS_MIN = -1
+                            HOME_SACK_YDS_AGAINST_MEAN = -1 
+                            HOME_SACK_YDS_AGAINST_STD = -1
+                            HOME_SACK_YDS_AGAINST_MAX = -1
+                            HOME_SACK_YDS_AGAINST_MIN = -1
+                            HOME_TOTAL_YDS_MEAN = -1 
+                            HOME_TOTAL_YDS_STD = -1
+                            HOME_TOTAL_YDS_MAX = -1
+                            HOME_TOTAL_YDS_MIN = -1
+                            HOME_FUMBLES_MEAN = -1 
+                            HOME_FUMBLES_STD = -1
+                            HOME_FUMBLES_MAX = -1
+                            HOME_FUMBLES_MIN = -1
+                            HOME_FUMBLES_LOST_MEAN = -1 
+                            HOME_FUMBLES_LOST_STD = -1
+                            HOME_FUMBLES_LOST_MAX = -1
+                            HOME_FUMBLES_LOST_MIN = -1
+                            HOME_TO_MEAN = -1 
+                            HOME_TO_STD = -1
+                            HOME_TO_MAX = -1
+                            HOME_TO_MIN = -1
+                            HOME_TO_AGAINST_MEAN = -1 
+                            HOME_TO_AGAINST_STD = -1
+                            HOME_TO_AGAINST_MAX = -1
+                            HOME_TO_AGAINST_MIN = -1
+                            HOME_PENALTIES_MEAN = -1 
+                            HOME_PENALTIES_STD = -1
+                            HOME_PENALTIES_MAX = -1
+                            HOME_PENALTIES_MIN = -1
+                            HOME_PENALTY_YARDS_MEAN = -1 
+                            HOME_PENALTY_YARDS_STD = -1
+                            HOME_PENALTY_YARDS_MAX = -1
+                            HOME_PENALTY_YARDS_MIN = -1
+                            HOME_3RD_DOWN_MEAN = -1 
+                            HOME_3RD_DOWN_STD = -1
+                            HOME_3RD_DOWN_MAX = -1
+                            HOME_3RD_DOWN_MIN = -1
+                            HOME_3RD_DOWN_ATT_MEAN = -1 
+                            HOME_3RD_DOWN_ATT_STD = -1
+                            HOME_3RD_DOWN_ATT_MAX = -1
+                            HOME_3RD_DOWN_ATT_MIN = -1
+                            HOME_3RD_DOWN_CONV_MEAN = -1 
+                            HOME_3RD_DOWN_CONV_STD = -1
+                            HOME_3RD_DOWN_CONV_MAX = -1
+                            HOME_3RD_DOWN_CONV_MIN = -1
+                            HOME_3RD_DOWN_AGAINST_MEAN = -1
+                            HOME_3RD_DOWN_AGAINST_STD = -1
+                            HOME_3RD_DOWN_AGAINST_MAX = -1
+                            HOME_3RD_DOWN_AGAINST_MIN = -1
+                            HOME_3RD_DOWN_ATT_AGAINST_MEAN = -1
+                            HOME_3RD_DOWN_ATT_AGAINST_STD = -1
+                            HOME_3RD_DOWN_ATT_AGAINST_MAX = -1
+                            HOME_3RD_DOWN_ATT_AGAINST_MIN = -1
+                            HOME_3RD_DOWN_CONV_AGAINST_MEAN = -1
+                            HOME_3RD_DOWN_CONV_AGAINST_STD = -1
+                            HOME_3RD_DOWN_CONV_AGAINST_MAX = -1
+                            HOME_3RD_DOWN_CONV_AGAINST_MIN = -1
+                            HOME_TOP_MEAN = -1 
+                            HOME_TOP_STD = -1
+                            HOME_TOP_MAX = -1
+                            HOME_TOP_MIN = -1
                         else:
-                            teams_cursor.execute(f"SELECT avg(W) FROM teams_{year} WHERE (WEEK < ?) and TEAM = ? order by WEEK desc;", (week, vis))
+                            teams_cursor.execute(f"SELECT avg(WIN) FROM teams_{year} WHERE (WEEK < ?) and TEAM = ? order by WEEK desc;", (week, vis))
                             away_win_pct = teams_cursor.fetchone()
-                            HOME_SOS = away_win_pct[0] #add to opposite teams sos
+                            HOME_SOS_GAME = away_win_pct[0] #add to opposite teams sos
 
-                            teams_cursor.execute(f"SELECT avg(W) FROM teams_{year} WHERE (WEEK < ?) and TEAM = ? order by WEEK desc;", (week, home))
+                            teams_cursor.execute(f"SELECT avg(WIN) FROM teams_{year} WHERE (WEEK < ?) and TEAM = ? order by WEEK desc;", (week, home))
                             home_win_pct = teams_cursor.fetchone()
-                            AWAY_SOS = home_win_pct[0] #add to opposite teams sos
+                            AWAY_SOS_GAME = home_win_pct[0] #add to opposite teams sos
 
+                            away_df = pd.read_sql_query(f"SELECT * FROM teams_{year} WHERE (WEEK < {week}) and TEAM = {vis} order by WEEK desc;", teams_con)
+                            home_df = pd.read_sql_query(f"SELECT * FROM teams_{year} WHERE (WEEK < {week}) and TEAM = {home} order by WEEK desc;", teams_con)
 
-                            vis_team_data.append({
-                                'SEASON':year,
-                                'WEEK':week,
-                                'WIN': 0.0 if home_team_win else 1.0,
-                                'TEAM_NAME':vis,
-                                'SCORE':AWAY_SCORE,
-                                'FD':AWAY_FD,
-                                'SACKED':AWAY_SACKED,
-                                'SACKED_YDS':AWAY_SACKED_YDS,
-                                'TOTAL_YDS':AWAY_TOTAL_YDS,
-                                'FUMBLES':AWAY_FUMBLES,
-                                'FUMBLES_LOST':AWAY_FUMBLES_LOST,
-                                'TO':AWAY_TO,
-                                'PENALTIES':AWAY_PENALTIES,
-                                'PENALTY_YARDS':AWAY_PENALTY_YARDS,
-                                '3RD_DOWN':AWAY_3RD_DOWN,
-                                '3RD_DOWN_ATT':AWAY_3RD_DOWN_ATT,
-                                '3RD_CONV':AWAY_3RD_CONV,
-                                'TOP':AWAY_TOP, 
-                                'SOS':AWAY_SOS
-                            })
-                            vis_team_data = pd.DataFrame(vis_team_data, columns=team_table_headers)
-                            vis_team_data.to_sql(f"teams_{year}", teams_con, if_exists="append")
+                            AWAY_SOS = away_df['SOS'].mean()
+                            HOME_SOS = home_df['SOS'].mean()
+                            AWAY_FD_MEAN = away_df['FD'].mean()
+                            AWAY_FD_STD = away_df['FD'].std()
+                            AWAY_FD_MIN = away_df['FD'].min()
+                            AWAY_FD_MAX = away_df['FD'].max()
+                            # ... ... ... ...
+                            # ADD ALL OF THESE COLUMNS THAT WERE PLUGGED WITH -1 ABOVE!!!!!
 
-                            home_team_data.append({
-                                'SEASON':year,
-                                'WEEK':week,
-                                'WIN':home_team_win,
-                                'TEAM_NAME':vis,
-                                'SCORE':HOME_SCORE,
-                                'FD':HOME_FD,
-                                'SACKED':HOME_SACKED,
-                                'SACKED_YDS':HOME_SACKED_YDS,
-                                'TOTAL_YDS':HOME_TOTAL_YDS,
-                                'FUMBLES':HOME_FUMBLES,
-                                'FUMBLES_LOST':HOME_FUMBLES_LOST,
-                                'TO':HOME_TO,
-                                'PENALTIES':HOME_PENALTIES,
-                                'PENALTY_YARDS':HOME_PENALTY_YARDS,
-                                '3RD_DOWN':HOME_3RD_DOWN,
-                                '3RD_DOWN_ATT':HOME_3RD_DOWN_ATT,
-                                '3RD_CONV':HOME_3RD_CONV,
-                                'TOP':HOME_TOP, 
-                                'SOS':HOME_SOS
-                            })
+                        # now append the data, so it doesn't mess up the historical load
+                        vis_team_data.append({
+                            'SEASON':year,
+                            'WEEK':week,
+                            'WIN': 0.0 if home_team_win else 1.0,
+                            'TEAM_NAME':vis,
+                            'SCORE':AWAY_SCORE,
+                            'SOS':AWAY_SOS_GAME,
+                            'TOP':AWAY_TOP, 
+                            'FD':AWAY_FD,
+                            'SACKS':AWAY_SACKED,
+                            'SACK_YDS':AWAY_SACKED_YDS,
+                            'TOTAL_YDS':AWAY_TOTAL_YDS,
+                            'FUMBLES':AWAY_FUMBLES,
+                            'FUMBLES_LOST':AWAY_FUMBLES_LOST,
+                            'TO':AWAY_TO,
+                            'PENALTIES':AWAY_PENALTIES,
+                            'PENALTY_YARDS':AWAY_PENALTY_YARDS,
+                            '3RD_DOWN':AWAY_3RD_DOWN,
+                            '3RD_DOWN_ATT':AWAY_3RD_DOWN_ATT,
+                            '3RD_CONV':AWAY_3RD_CONV,
+                            'FD_AGAINST':HOME_FD,
+                            'SACKS_AGAINST':HOME_SACKED,
+                            'SACK_YDS_AGAINST':HOME_SACKED_YDS,
+                            'TOTAL_YDS_AGAINST':HOME_TOTAL_YDS,
+                            'FUMBLES_AGAINST':HOME_FUMBLES,
+                            'FUMBLES_LOST_AGAINST':HOME_FUMBLES_LOST,
+                            'TO_AGAINST':HOME_TO,
+                            'PENALTIES_AGAINST':HOME_PENALTIES,
+                            'PENALTY_YARDS_AGAINST':HOME_PENALTY_YARDS,
+                            '3RD_DOWN_AGAINST':HOME_3RD_DOWN,
+                            '3RD_DOWN_ATT_AGAINST':HOME_3RD_DOWN_ATT,
+                            '3RD_CONV_AGAINST':HOME_3RD_CONV
+                        })
+                        vis_team_data = pd.DataFrame(vis_team_data, columns=team_table_headers)
+                        vis_team_data.to_sql(f"teams_{year}", teams_con, if_exists="append")
 
-                            home_team_data = pd.DataFrame(home_team_data, columns=team_table_headers)
-                            home_team_data.to_sql(f"teams_{year}", teams_con, if_exists="append")
+                        home_team_data.append({
+                            'SEASON':year,
+                            'WEEK':week,
+                            'WIN':home_team_win,
+                            'TEAM_NAME':vis,
+                            'SCORE':HOME_SCORE,
+                            'SOS':HOME_SOS_GAME,
+                            'TOP':HOME_TOP, 
+                            'FD':HOME_FD,
+                            'SACKS':HOME_SACKED,
+                            'SACK_YDS':HOME_SACKED_YDS,
+                            'TOTAL_YDS':HOME_TOTAL_YDS,
+                            'FUMBLES':HOME_FUMBLES,
+                            'FUMBLES_LOST':HOME_FUMBLES_LOST,
+                            'TO':HOME_TO,
+                            'PENALTIES':HOME_PENALTIES,
+                            'PENALTY_YARDS':HOME_PENALTY_YARDS,
+                            '3RD_DOWN':HOME_3RD_DOWN,
+                            '3RD_DOWN_ATT':HOME_3RD_DOWN_ATT,
+                            '3RD_CONV':HOME_3RD_CONV,
+                            'FD_AGAINST':AWAY_FD,
+                            'SACKS_AGAINST':AWAY_SACKED,
+                            'SACK_YDS_AGAINST':AWAY_SACKED_YDS,
+                            'TOTAL_YDS_AGAINST':AWAY_TOTAL_YDS,
+                            'FUMBLES_AGAINST':AWAY_FUMBLES,
+                            'FUMBLES_LOST_AGAINST':AWAY_FUMBLES_LOST,
+                            'TO_AGAINST':AWAY_TO,
+                            'PENALTIES_AGAINST':AWAY_PENALTIES,
+                            'PENALTY_YARDS_AGAINST':AWAY_PENALTY_YARDS,
+                            '3RD_DOWN_AGAINST':AWAY_3RD_DOWN,
+                            '3RD_DOWN_ATT_AGAINST':AWAY_3RD_DOWN_ATT,
+                            '3RD_CONV_AGAINST':AWAY_3RD_CONV
+                        })
+
+                        home_team_data = pd.DataFrame(home_team_data, columns=team_table_headers)
+                        home_team_data.to_sql(f"teams_{year}", teams_con, if_exists="append")
 
                         #####################################################
                         #####   END COLLECTING DATA FOR TEAM TABLES     #####
@@ -441,18 +639,24 @@ for year in years:
                             ROOF = roof_row.find('td', {'data-stat':'stat'}).get_text().strip()
 
                         except:
-                            OU_COVER = 0.0
-                            OU = 0
-                            SPREAD = 0
-                            SPREAD_COVER = 0.0
-                            WIND_SPEED = None
-                            TEMP = None
-                            SURFACE = None
-                            ROOF = None
+                            OU_COVER = -1
+                            OU = -1
+                            SPREAD = -1
+                            SPREAD_COVER = -1
+                            WIND_SPEED = -1
+                            TEMP = -1
+                            SURFACE = -1
+                            ROOF = -1
 
             except Exception as e: 
                 print('could not get game data: ', e)
                 
+            # FOR TRAINING DATA, TAKE MEAN, STD, MAX, AND MIN OF EACH AND EVERY STAT, UP TO THE POINT IN TIME WHEN THE GAME WAS PLAYED
+                #  EXCEPT: QB WINS, AGES, USAGE/snaps, DIV MATCH
+            # TEAM STATS AND RUSHER STAS SHOULD ONLY BE TAKEN FROM CURRENT SEASON. 
+            # PASSER STATS SHOULD BE CAREER BASED
+                # USE -1 IF NO DATA IS AVAILABLE; MINIMUM OF 2 GAMES TO USE STD; MINIMUM OF 3 TO USE MIN AND MAX
+
             season_data.append({
                 'SEASON': year,
                 'WEEK': week,
@@ -460,100 +664,457 @@ for year in years:
                 'HOME_TEAM_NAME': home,
                 'AWAY_SCORE': AWAY_SCORE,
                 'HOME_SCORE': HOME_SCORE,
-                'AWAY_FD': AWAY_FD,
-                'AWAY_SACKED': AWAY_SACKED,
-                'AWAY_SACKED_YDS': AWAY_SACKED_YDS,
-                'AWAY_TOTAL_YDS': AWAY_TOTAL_YDS,
-                'AWAY_FUMBLES': AWAY_FUMBLES,
-                'AWAY_FUMBLES_LOST': AWAY_FUMBLES_LOST,
-                'AWAY_TO': AWAY_TO,
-                'AWAY_PENALTIES': AWAY_PENALTIES,
-                'AWAY_PENALTY_YARDS': AWAY_PENALTY_YARDS,
-                'AWAY_3RD_DOWN':AWAY_3RD_DOWN,
-                'AWAY_3RD_DOWN_ATT':AWAY_3RD_DOWN_ATT,
-                'AWAY_3RD_CONV': AWAY_3RD_CONV,
-                'AWAY_TOP': AWAY_TOP,
+                'DIV_MATCH': 0,
                 'AWAY_SOS': AWAY_SOS, # NEED TO GET AVERAGE SOS ENTERING GAME
-                'AWAY_PASS_COMP':AWAY_PASS_COMP,
-                'AWAY_PASS_ATT':AWAY_PASS_ATT,
-                'AWAY_PASS_YDS':AWAY_PASS_YDS,
-                'AWAY_PASS_1D':AWAY_PASS_1D,
-                'AWAY_PASS_1DPCT':AWAY_PASS_1DPCT,
-                'AWAY_PASS_IAY':AWAY_PASS_IAY,
-                'AWAY_PASS_IAYPA':AWAY_PASS_IAYPA,
-                'AWAY_PASS_CAY':AWAY_PASS_CAY,
-                'AWAY_PASS_CAYCMP':AWAY_PASS_CAYCMP,
-                'AWAY_PASS_CAYPA':AWAY_PASS_CAYPA,
-                'AWAY_PASS_YAC':AWAY_PASS_YAC,
-                'AWAY_PASS_YACCMP':AWAY_PASS_YACCMP,
-                'AWAY_PASS_DROPS':AWAY_PASS_DROPS,
-                'AWAY_PASS_DROPPCT':AWAY_PASS_DROPPCT,
-                'AWAY_PASS_BADTH':AWAY_PASS_BADTH,
-                'AWAY_PASS_SK':AWAY_PASS_SK,
-                'AWAY_PASS_BLTZ':AWAY_PASS_BLTZ,
-                'AWAY_PASS_HRRY':AWAY_PASS_HRRY,
-                'AWAY_PASS_HITS':AWAY_PASS_HITS,
-                'AWAY_PASS_PRSS':AWAY_PASS_PRSS,
-                'AWAY_PASS_PRSSPCT':AWAY_PASS_PRSSPCT,
-                'AWAY_PASS_SCRM':AWAY_PASS_PRSSPCT,
-                'AWAY_PASS_YDSSCRM':AWAY_PASS_PRSSPCT,
-                "AWAY_RUSH_ATT":AWAY_RUSH_ATT,
-                "AWAY_RUSH_YDS":AWAY_RUSH_YDS,
-                "AWAY_RUSH_TD":AWAY_RUSH_TD,
-                "AWAY_RUSH_1D":AWAY_RUSH_1D,
-                "AWAY_RUSH_YBC":AWAY_RUSH_YBC,
-                "AWAY_RUSH_YBCATT":AWAY_RUSH_YBCATT,
-                "AWAY_RUSH_YAC":AWAY_RUSH_YAC,
-                "AWAY_RUSH_YACATT":AWAY_RUSH_YACATT,
-                "AWAY_RUSH_BRKTKL":AWAY_RUSH_BRKTKL,
-                "AWAY_RUSH_ATTBR":AWAY_RUSH_ATTBR,
-                'HOME_FD': HOME_FD,
-                'HOME_SACKED': HOME_SACKED,
-                'HOME_SACKED_YDS': HOME_SACKED_YDS,
-                'HOME_TOTAL_YDS': HOME_TOTAL_YDS,
-                'HOME_FUMBLES': HOME_FUMBLES,
-                'HOME_FUMBLES_LOST': HOME_FUMBLES_LOST,
-                'HOME_TO': HOME_TO,
-                'HOME_PENALTIES': HOME_PENALTIES,
-                'HOME_PENALTY_YARDS': HOME_PENALTY_YARDS,
-                'HOME_3RD_DOWN':HOME_3RD_DOWN,
-                'HOME_3RD_DOWN_ATT':HOME_3RD_DOWN_ATT,
-                'HOME_3RD_CONV': HOME_3RD_CONV,
-                'HOME_TOP': HOME_TOP,
+                'AWAY_UNIQ_STARTERS_DEFENSE': 0,
+                'AWAY_UNIQ_STARTERS_OL':0,
+                'AWAY_UNIQ_STARTERS_WR':0,
+                'HOME_UNIQ_STARTERS_DEFENSE': 0,
+                'HOME_UNIQ_STARTERS_OL':0,
+                'HOME_UNIQ_STARTERS_WR':0,
                 'HOME_SOS': HOME_SOS,
-                'HOME_PASS_COMP':HOME_PASS_COMP,
-                'HOME_PASS_ATT':HOME_PASS_ATT,
-                'HOME_PASS_YDS':HOME_PASS_YDS,
-                'HOME_PASS_1D':HOME_PASS_1D,
-                'HOME_PASS_1DPCT':HOME_PASS_1DPCT,
-                'HOME_PASS_IAY':HOME_PASS_IAY,
-                'HOME_PASS_IAYPA':HOME_PASS_IAYPA,
-                'HOME_PASS_CAY':HOME_PASS_CAY,
-                'HOME_PASS_CAYCMP':HOME_PASS_CAYCMP,
-                'HOME_PASS_CAYPA':HOME_PASS_CAYPA,
-                'HOME_PASS_YAC':HOME_PASS_YAC,
-                'HOME_PASS_YACCMP':HOME_PASS_YACCMP,
-                'HOME_PASS_DROPS':HOME_PASS_DROPS,
-                'HOME_PASS_DROPPCT':HOME_PASS_DROPPCT,
-                'HOME_PASS_BADTH':HOME_PASS_BADTH,
-                'HOME_PASS_SK':HOME_PASS_SK,
-                'HOME_PASS_BLTZ':HOME_PASS_BLTZ,
-                'HOME_PASS_HRRY':HOME_PASS_HRRY,
-                'HOME_PASS_HITS':HOME_PASS_HITS,
-                'HOME_PASS_PRSS':HOME_PASS_PRSS,
-                'HOME_PASS_PRSSPCT':HOME_PASS_PRSSPCT,
-                'HOME_PASS_SCRM':HOME_PASS_PRSSPCT,
-                'HOME_PASS_YDSSCRM':HOME_PASS_PRSSPCT,
-                "HOME_RUSH_ATT":HOME_RUSH_ATT,
-                "HOME_RUSH_YDS":HOME_RUSH_YDS,
-                "HOME_RUSH_TD":HOME_RUSH_TD,
-                "HOME_RUSH_1D":HOME_RUSH_1D,
-                "HOME_RUSH_YBC":HOME_RUSH_YBC,
-                "HOME_RUSH_YBCATT":HOME_RUSH_YBCATT,
-                "HOME_RUSH_YAC":HOME_RUSH_YAC,
-                "HOME_RUSH_YACATT":HOME_RUSH_YACATT,
-                "HOME_RUSH_BRKTKL":HOME_RUSH_BRKTKL,
-                "HOME_RUSH_ATTBR":HOME_RUSH_ATTBR,
+                # 'AWAY_DEFENSE_YRS_EXP': 0,
+                # 'AWAY_OL_YRS_EXP': 0,
+                # 'AWAY_WR_YRS_EXP': 0,
+                # 'HOME_DEFENSE_YRS_EXP': 0, 
+                # 'HOME_OL_YRS_EXP': 0,
+                # 'HOME_WR_YRS_EXP': 0,
+                'AWAY_FD_MEAN': 0, 
+                'AWAY_FD_STD': 0,
+                'AWAY_FD_MAX': 0,
+                'AWAY_FD_MIN': 0,
+                'AWAY_FD_AGAINST_MEAN': 0,
+                'AWAY_FD_AGAINST_STD': 0,
+                'AWAY_FD_AGAINST_MAX': 0,
+                'AWAY_FD_AGAINST_MIN': 0,
+                'AWAY_SACKS_MEAN': 0, 
+                'AWAY_SACKS_STD': 0,
+                'AWAY_SACKS_MAX': 0,
+                'AWAY_SACKS_MIN': 0,
+                'AWAY_SACKS_AGAINST_MEAN': 0, 
+                'AWAY_SACKS_AGAINST_STD': 0,
+                'AWAY_SACKS_AGAINST_MAX': 0,
+                'AWAY_SACKS_AGAINST_MIN': 0,
+                'AWAY_SACK_YDS_MEAN': 0, 
+                'AWAY_SACK_YDS_STD': 0,
+                'AWAY_SACK_YDS_MAX': 0,
+                'AWAY_SACK_YDS_MIN': 0,
+                'AWAY_SACK_YDS_AGAINST_MEAN': 0, 
+                'AWAY_SACK_YDS_AGAINST_STD': 0,
+                'AWAY_SACK_YDS_AGAINST_MAX': 0,
+                'AWAY_SACK_YDS_AGAINST_MIN': 0,
+                'AWAY_TOTAL_YDS_MEAN': 0, 
+                'AWAY_TOTAL_YDS_STD': 0,
+                'AWAY_TOTAL_YDS_MAX': 0,
+                'AWAY_TOTAL_YDS_MIN': 0,
+                'AWAY_FUMBLES_MEAN': 0, 
+                'AWAY_FUMBLES_STD': 0,
+                'AWAY_FUMBLES_MAX': 0,
+                'AWAY_FUMBLES_MIN': 0,
+                'AWAY_FUMBLES_LOST_MEAN': 0, 
+                'AWAY_FUMBLES_LOST_STD': 0,
+                'AWAY_FUMBLES_LOST_MAX': 0,
+                'AWAY_FUMBLES_LOST_MIN': 0,
+                'AWAY_TO_MEAN': 0, 
+                'AWAY_TO_STD': 0,
+                'AWAY_TO_MAX': 0,
+                'AWAY_TO_MIN': 0,
+                'AWAY_TO_AGAINST_MEAN': 0, 
+                'AWAY_TO_AGAINST_STD': 0,
+                'AWAY_TO_AGAINST_MAX': 0,
+                'AWAY_TO_AGAINST_MIN': 0,
+                'AWAY_PENALTIES_MEAN': 0, 
+                'AWAY_PENALTIES_STD': 0,
+                'AWAY_PENALTIES_MAX': 0,
+                'AWAY_PENALTIES_MIN': 0,
+                'AWAY_PENALTY_YARDS_MEAN': 0, 
+                'AWAY_PENALTY_YARDS_STD': 0,
+                'AWAY_PENALTY_YARDS_MAX': 0,
+                'AWAY_PENALTY_YARDS_MIN': 0,
+                'AWAY_3RD_DOWN_MEAN': 0, 
+                'AWAY_3RD_DOWN_STD': 0,
+                'AWAY_3RD_DOWN_MAX': 0,
+                'AWAY_3RD_DOWN_MIN': 0,
+                'AWAY_3RD_DOWN_ATT_MEAN': 0, 
+                'AWAY_3RD_DOWN_ATT_STD': 0,
+                'AWAY_3RD_DOWN_ATT_MAX': 0,
+                'AWAY_3RD_DOWN_ATT_MIN': 0,
+                'AWAY_3RD_DOWN_CONV_MEAN': 0, 
+                'AWAY_3RD_DOWN_CONV_STD': 0,
+                'AWAY_3RD_DOWN_CONV_MAX': 0,
+                'AWAY_3RD_DOWN_CONV_MIN': 0,
+                'AWAY_3RD_DOWN_AGAINST_MEAN': 0,
+                'AWAY_3RD_DOWN_AGAINST_STD': 0,
+                'AWAY_3RD_DOWN_AGAINST_MAX': 0,
+                'AWAY_3RD_DOWN_AGAINST_MIN': 0,
+                'AWAY_3RD_DOWN_ATT_AGAINST_MEAN': 0,
+                'AWAY_3RD_DOWN_ATT_AGAINST_STD': 0,
+                'AWAY_3RD_DOWN_ATT_AGAINST_MAX': 0,
+                'AWAY_3RD_DOWN_ATT_AGAINST_MIN': 0,
+                'AWAY_3RD_DOWN_CONV_AGAINST_MEAN': 0,
+                'AWAY_3RD_DOWN_CONV_AGAINST_STD': 0,
+                'AWAY_3RD_DOWN_CONV_AGAINST_MAX': 0,
+                'AWAY_3RD_DOWN_CONV_AGAINST_MIN': 0,
+                'AWAY_TOP_MEAN': 0, 
+                'AWAY_TOP_STD': 0,
+                'AWAY_TOP_MAX': 0,
+                'AWAY_TOP_MIN': 0,
+                'AWAY_PASS_COMP_MEAN': 0, 
+                'AWAY_PASS_COMP_STD': 0,
+                'AWAY_PASS_COMP_MAX': 0,
+                'AWAY_PASS_COMP_MIN': 0,
+                'AWAY_PASS_ATT_MEAN': 0, 
+                'AWAY_PASS_ATT_STD': 0,
+                'AWAY_PASS_ATT_MAX': 0,
+                'AWAY_PASS_ATT_MIN': 0,
+                'AWAY_PASS_YDS_MEAN': 0, 
+                'AWAY_PASS_YDS_STD': 0,
+                'AWAY_PASS_YDS_MAX': 0,
+                'AWAY_PASS_YDS_MIN': 0,
+                'AWAY_PASS_1D_MEAN': 0, 
+                'AWAY_PASS_1D_STD': 0,
+                'AWAY_PASS_1D_MAX': 0,
+                'AWAY_PASS_1D_MIN': 0,
+                'AWAY_PASS_1DPCT_MEAN': 0, 
+                'AWAY_PASS_1DPCT_STD': 0,
+                'AWAY_PASS_1DPCT_MAX': 0,
+                'AWAY_PASS_1DPCT_MIN': 0,
+                'AWAY_PASS_IAY_MEAN': 0, 
+                'AWAY_PASS_IAY_STD': 0,
+                'AWAY_PASS_IAY_MAX': 0,
+                'AWAY_PASS_IAY_MIN': 0,
+                'AWAY_PASS_IAYPA_MEAN': 0, 
+                'AWAY_PASS_IAYPA_STD': 0,
+                'AWAY_PASS_IAYPA_MAX': 0,
+                'AWAY_PASS_IAYPA_MIN': 0,
+                'AWAY_PASS_CAY_MEAN': 0, 
+                'AWAY_PASS_CAY_STD': 0,
+                'AWAY_PASS_CAY_MAX': 0,
+                'AWAY_PASS_CAY_MIN': 0,
+                'AWAY_PASS_CAYCMP_MEAN': 0, 
+                'AWAY_PASS_CAYCMP_STD': 0,
+                'AWAY_PASS_CAYCMP_MAX': 0,
+                'AWAY_PASS_CAYCMP_MIN': 0,
+                'AWAY_PASS_CAYPA_MEAN': 0, 
+                'AWAY_PASS_CAYPA_STD': 0,
+                'AWAY_PASS_CAYPA_MAX': 0,
+                'AWAY_PASS_CAYPA_MIN': 0,
+                'AWAY_PASS_YAC_MEAN': 0, 
+                'AWAY_PASS_YAC_STD': 0,
+                'AWAY_PASS_YAC_MAX': 0,
+                'AWAY_PASS_YAC_MIN': 0,
+                'AWAY_PASS_YACCMP_MEAN': 0, 
+                'AWAY_PASS_YACCMP_STD': 0,
+                'AWAY_PASS_YACCMP_MAX': 0,
+                'AWAY_PASS_YACCMP_MIN': 0,
+                'AWAY_PASS_DROPS_MEAN': 0, 
+                'AWAY_PASS_DROPS_STD': 0,
+                'AWAY_PASS_DROPS_MAX': 0,
+                'AWAY_PASS_DROPS_MIN': 0,
+                'AWAY_PASS_DROPPCT_MEAN': 0, 
+                'AWAY_PASS_DROPPCT_STD': 0,
+                'AWAY_PASS_DROPPCT_MAX': 0,
+                'AWAY_PASS_DROPPCT_MIN': 0,
+                'AWAY_PASS_BADTH_MEAN': 0, 
+                'AWAY_PASS_BADTH_STD': 0,
+                'AWAY_PASS_BADTH_MAX': 0,
+                'AWAY_PASS_BADTH_MIN': 0,
+                'AWAY_PASS_SK_MEAN': 0, 
+                'AWAY_PASS_SK_STD': 0,
+                'AWAY_PASS_SK_MAX': 0,
+                'AWAY_PASS_SK_MIN': 0,
+                'AWAY_PASS_BLITZ_MEAN': 0, 
+                'AWAY_PASS_BLITZ_STD': 0,
+                'AWAY_PASS_BLITZ_MAX': 0,
+                'AWAY_PASS_BLITZ_MIN': 0,
+                'AWAY_PASS_HRRY_MEAN': 0, 
+                'AWAY_PASS_HRRY_STD': 0,
+                'AWAY_PASS_HRRY_MAX': 0,
+                'AWAY_PASS_HRRY_MIN': 0,
+                'AWAY_PASS_HITS_MEAN': 0, 
+                'AWAY_PASS_HITS_STD': 0,
+                'AWAY_PASS_HITS_MAX': 0,
+                'AWAY_PASS_HITS_MIN': 0,
+                'AWAY_PASS_PRSS_MEAN': 0, 
+                'AWAY_PASS_PRSS_STD': 0,
+                'AWAY_PASS_PRSS_MAX': 0,
+                'AWAY_PASS_PRSS_MIN': 0,
+                'AWAY_PASS_PRSSPCT_MEAN': 0, 
+                'AWAY_PASS_PRSSPCT_STD': 0,
+                'AWAY_PASS_PRSSPCT_MAX': 0,
+                'AWAY_PASS_PRSSPCT_MIN': 0,
+                'AWAY_PASS_SCRM_MEAN': 0, 
+                'AWAY_PASS_SCRM_STD': 0,
+                'AWAY_PASS_SCRM_MAX': 0,
+                'AWAY_PASS_SCRM_MIN': 0,
+                'AWAY_PASS_YDSSCRM_MEAN': 0, 
+                'AWAY_PASS_YDSSCRM_STD': 0,
+                'AWAY_PASS_YDSSCRM_MAX': 0,
+                'AWAY_PASS_YDSSCRM_MIN': 0,
+                'AWAY_PASS_BIG_GAME_W': 0, # spread of -2.5 or tighter
+                'AWAY_PASS_BIG_GAME_L': 0,
+                'AWAY_PASS_PLAYOFF_W': 0,
+                'AWAY_PASS_PLAYOFF_L': 0,
+                'AWAY_PASS_CHAMP_W': 0,
+                'AWAY_PASS_CHAMP_L': 0,
+                'AWAY_RUSH_ATT_MEAN': 0, 
+                'AWAY_RUSH_ATT_STD': 0,
+                'AWAY_RUSH_ATT_MAX': 0,
+                'AWAY_RUSH_ATT_MIN': 0,
+                'AWAY_RUSH_YDS_MEAN': 0, 
+                'AWAY_RUSH_YDS_STD': 0,
+                'AWAY_RUSH_YDS_MAX': 0,
+                'AWAY_RUSH_YDS_MIN': 0,
+                'AWAY_RUSH_TD_MEAN': 0, 
+                'AWAY_RUSH_TD_STD': 0,
+                'AWAY_RUSH_TD_MAX': 0,
+                'AWAY_RUSH_TD_MIN': 0,
+                'AWAY_RUSH_1D_MEAN': 0, 
+                'AWAY_RUSH_1D_STD': 0,
+                'AWAY_RUSH_1D_MAX': 0,
+                'AWAY_RUSH_1D_MIN': 0,
+                'AWAY_RUSH_YBC_MEAN': 0, 
+                'AWAY_RUSH_YBC_STD': 0,
+                'AWAY_RUSH_YBC_MAX': 0,
+                'AWAY_RUSH_YBC_MIN': 0,
+                'AWAY_RUSH_YBCATT_MEAN': 0, 
+                'AWAY_RUSH_YBCATT_STD': 0,
+                'AWAY_RUSH_YBCATT_MAX': 0,
+                'AWAY_RUSH_YBCATT_MIN': 0,
+                'AWAY_RUSH_YAC_MEAN': 0, 
+                'AWAY_RUSH_YAC_STD': 0,
+                'AWAY_RUSH_YAC_MAX': 0,
+                'AWAY_RUSH_YAC_MIN': 0,
+                'AWAY_RUSH_YACATT_MEAN': 0, 
+                'AWAY_RUSH_YACATT_STD': 0,
+                'AWAY_RUSH_YACATT_MAX': 0,
+                'AWAY_RUSH_YACATT_MIN': 0,
+                'AWAY_RUSH_BRKTKL_MEAN': 0, 
+                'AWAY_RUSH_BRKTKL_STD': 0,
+                'AWAY_RUSH_BRKTKL_MAX': 0,
+                'AWAY_RUSH_BRKTKL_MIN': 0,
+                'AWAY_RUSH_ATTBR_MEAN': 0, 
+                'AWAY_RUSH_ATTBR_STD': 0,
+                'AWAY_RUSH_ATTBR_MAX': 0,
+                'AWAY_RUSH_ATTBR_MIN': 0,
+                'HOME_FD_MEAN': 0, 
+                'HOME_FD_STD': 0,
+                'HOME_FD_MAX': 0,
+                'HOME_FD_MIN': 0,
+                'HOME_FD_AGAINST_MEAN': 0,
+                'HOME_FD_AGAINST_STD': 0,
+                'HOME_FD_AGAINST_MAX': 0,
+                'HOME_FD_AGAINST_MIN': 0,
+                'HOME_SACKS_MEAN': 0, 
+                'HOME_SACKS_STD': 0,
+                'HOME_SACKS_MAX': 0,
+                'HOME_SACKS_MIN': 0,
+                'HOME_SACKS_AGAINST_MEAN': 0, 
+                'HOME_SACKS_AGAINST_STD': 0,
+                'HOME_SACKS_AGAINST_MAX': 0,
+                'HOME_SACKS_AGAINST_MIN': 0,
+                'HOME_SACK_YDS_MEAN': 0, 
+                'HOME_SACK_YDS_STD': 0,
+                'HOME_SACK_YDS_MAX': 0,
+                'HOME_SACK_YDS_MIN': 0,
+                'HOME_SACK_YDS_AGAINST_MEAN': 0, 
+                'HOME_SACK_YDS_AGAINST_STD': 0,
+                'HOME_SACK_YDS_AGAINST_MAX': 0,
+                'HOME_SACK_YDS_AGAINST_MIN': 0,
+                'HOME_TOTAL_YDS_MEAN': 0, 
+                'HOME_TOTAL_YDS_STD': 0,
+                'HOME_TOTAL_YDS_MAX': 0,
+                'HOME_TOTAL_YDS_MIN': 0,
+                'HOME_FUMBLES_MEAN': 0, 
+                'HOME_FUMBLES_STD': 0,
+                'HOME_FUMBLES_MAX': 0,
+                'HOME_FUMBLES_MIN': 0,
+                'HOME_FUMBLES_LOST_MEAN': 0, 
+                'HOME_FUMBLES_LOST_STD': 0,
+                'HOME_FUMBLES_LOST_MAX': 0,
+                'HOME_FUMBLES_LOST_MIN': 0,
+                'HOME_TO_MEAN': 0, 
+                'HOME_TO_STD': 0,
+                'HOME_TO_MAX': 0,
+                'HOME_TO_MIN': 0,
+                'HOME_TO_AGAINST_MEAN': 0, 
+                'HOME_TO_AGAINST_STD': 0,
+                'HOME_TO_AGAINST_MAX': 0,
+                'HOME_TO_AGAINST_MIN': 0,
+                'HOME_PENALTIES_MEAN': 0, 
+                'HOME_PENALTIES_STD': 0,
+                'HOME_PENALTIES_MAX': 0,
+                'HOME_PENALTIES_MIN': 0,
+                'HOME_PENALTY_YARDS_MEAN': 0, 
+                'HOME_PENALTY_YARDS_STD': 0,
+                'HOME_PENALTY_YARDS_MAX': 0,
+                'HOME_PENALTY_YARDS_MIN': 0,
+                'HOME_3RD_DOWN_MEAN': 0, 
+                'HOME_3RD_DOWN_STD': 0,
+                'HOME_3RD_DOWN_MAX': 0,
+                'HOME_3RD_DOWN_MIN': 0,
+                'HOME_3RD_DOWN_ATT_MEAN': 0, 
+                'HOME_3RD_DOWN_ATT_STD': 0,
+                'HOME_3RD_DOWN_ATT_MAX': 0,
+                'HOME_3RD_DOWN_ATT_MIN': 0,
+                'HOME_3RD_DOWN_CONV_MEAN': 0, 
+                'HOME_3RD_DOWN_CONV_STD': 0,
+                'HOME_3RD_DOWN_CONV_MAX': 0,
+                'HOME_3RD_DOWN_CONV_MIN': 0,
+                'HOME_3RD_DOWN_AGAINST_MEAN': 0,
+                'HOME_3RD_DOWN_AGAINST_STD': 0,
+                'HOME_3RD_DOWN_AGAINST_MAX': 0,
+                'HOME_3RD_DOWN_AGAINST_MIN': 0,
+                'HOME_3RD_DOWN_ATT_AGAINST_MEAN': 0,
+                'HOME_3RD_DOWN_ATT_AGAINST_STD': 0,
+                'HOME_3RD_DOWN_ATT_AGAINST_MAX': 0,
+                'HOME_3RD_DOWN_ATT_AGAINST_MIN': 0,
+                'HOME_3RD_DOWN_CONV_AGAINST_MEAN': 0,
+                'HOME_3RD_DOWN_CONV_AGAINST_STD': 0,
+                'HOME_3RD_DOWN_CONV_AGAINST_MAX': 0,
+                'HOME_3RD_DOWN_CONV_AGAINST_MIN': 0,
+                'HOME_TOP_MEAN': 0, 
+                'HOME_TOP_STD': 0,
+                'HOME_TOP_MAX': 0,
+                'HOME_TOP_MIN': 0,
+                'HOME_PASS_COMP_MEAN': 0, 
+                'HOME_PASS_COMP_STD': 0,
+                'HOME_PASS_COMP_MAX': 0,
+                'HOME_PASS_COMP_MIN': 0,
+                'HOME_PASS_ATT_MEAN': 0, 
+                'HOME_PASS_ATT_STD': 0,
+                'HOME_PASS_ATT_MAX': 0,
+                'HOME_PASS_ATT_MIN': 0,
+                'HOME_PASS_YDS_MEAN': 0, 
+                'HOME_PASS_YDS_STD': 0,
+                'HOME_PASS_YDS_MAX': 0,
+                'HOME_PASS_YDS_MIN': 0,
+                'HOME_PASS_1D_MEAN': 0, 
+                'HOME_PASS_1D_STD': 0,
+                'HOME_PASS_1D_MAX': 0,
+                'HOME_PASS_1D_MIN': 0,
+                'HOME_PASS_1DPCT_MEAN': 0, 
+                'HOME_PASS_1DPCT_STD': 0,
+                'HOME_PASS_1DPCT_MAX': 0,
+                'HOME_PASS_1DPCT_MIN': 0,
+                'HOME_PASS_IAY_MEAN': 0, 
+                'HOME_PASS_IAY_STD': 0,
+                'HOME_PASS_IAY_MAX': 0,
+                'HOME_PASS_IAY_MIN': 0,
+                'HOME_PASS_IAYPA_MEAN': 0, 
+                'HOME_PASS_IAYPA_STD': 0,
+                'HOME_PASS_IAYPA_MAX': 0,
+                'HOME_PASS_IAYPA_MIN': 0,
+                'HOME_PASS_CAY_MEAN': 0, 
+                'HOME_PASS_CAY_STD': 0,
+                'HOME_PASS_CAY_MAX': 0,
+                'HOME_PASS_CAY_MIN': 0,
+                'HOME_PASS_CAYCMP_MEAN': 0, 
+                'HOME_PASS_CAYCMP_STD': 0,
+                'HOME_PASS_CAYCMP_MAX': 0,
+                'HOME_PASS_CAYCMP_MIN': 0,
+                'HOME_PASS_CAYPA_MEAN': 0, 
+                'HOME_PASS_CAYPA_STD': 0,
+                'HOME_PASS_CAYPA_MAX': 0,
+                'HOME_PASS_CAYPA_MIN': 0,
+                'HOME_PASS_YAC_MEAN': 0, 
+                'HOME_PASS_YAC_STD': 0,
+                'HOME_PASS_YAC_MAX': 0,
+                'HOME_PASS_YAC_MIN': 0,
+                'HOME_PASS_YACCMP_MEAN': 0, 
+                'HOME_PASS_YACCMP_STD': 0,
+                'HOME_PASS_YACCMP_MAX': 0,
+                'HOME_PASS_YACCMP_MIN': 0,
+                'HOME_PASS_DROPS_MEAN': 0, 
+                'HOME_PASS_DROPS_STD': 0,
+                'HOME_PASS_DROPS_MAX': 0,
+                'HOME_PASS_DROPS_MIN': 0,
+                'HOME_PASS_DROPPCT_MEAN': 0, 
+                'HOME_PASS_DROPPCT_STD': 0,
+                'HOME_PASS_DROPPCT_MAX': 0,
+                'HOME_PASS_DROPPCT_MIN': 0,
+                'HOME_PASS_BADTH_MEAN': 0, 
+                'HOME_PASS_BADTH_STD': 0,
+                'HOME_PASS_BADTH_MAX': 0,
+                'HOME_PASS_BADTH_MIN': 0,
+                'HOME_PASS_SK_MEAN': 0, 
+                'HOME_PASS_SK_STD': 0,
+                'HOME_PASS_SK_MAX': 0,
+                'HOME_PASS_SK_MIN': 0,
+                'HOME_PASS_BLITZ_MEAN': 0, 
+                'HOME_PASS_BLITZ_STD': 0,
+                'HOME_PASS_BLITZ_MAX': 0,
+                'HOME_PASS_BLITZ_MIN': 0,
+                'HOME_PASS_HRRY_MEAN': 0, 
+                'HOME_PASS_HRRY_STD': 0,
+                'HOME_PASS_HRRY_MAX': 0,
+                'HOME_PASS_HRRY_MIN': 0,
+                'HOME_PASS_HITS_MEAN': 0, 
+                'HOME_PASS_HITS_STD': 0,
+                'HOME_PASS_HITS_MAX': 0,
+                'HOME_PASS_HITS_MIN': 0,
+                'HOME_PASS_PRSS_MEAN': 0, 
+                'HOME_PASS_PRSS_STD': 0,
+                'HOME_PASS_PRSS_MAX': 0,
+                'HOME_PASS_PRSS_MIN': 0,
+                'HOME_PASS_PRSSPCT_MEAN': 0, 
+                'HOME_PASS_PRSSPCT_STD': 0,
+                'HOME_PASS_PRSSPCT_MAX': 0,
+                'HOME_PASS_PRSSPCT_MIN': 0,
+                'HOME_PASS_SCRM_MEAN': 0, 
+                'HOME_PASS_SCRM_STD': 0,
+                'HOME_PASS_SCRM_MAX': 0,
+                'HOME_PASS_SCRM_MIN': 0,
+                'HOME_PASS_YDSSCRM_MEAN': 0, 
+                'HOME_PASS_YDSSCRM_STD': 0,
+                'HOME_PASS_YDSSCRM_MAX': 0,
+                'HOME_PASS_YDSSCRM_MIN': 0,
+                'HOME_PASS_BIG_GAME_W': 0, # spread of -2.5 or tighter
+                'HOME_PASS_BIG_GAME_L': 0,
+                'HOME_PASS_PLAYOFF_W': 0,
+                'HOME_PASS_PLAYOFF_L': 0,
+                'HOME_PASS_CHAMP_W': 0,
+                'HOME_PASS_CHAMP_L': 0,
+                'HOME_RUSH_ATT_MEAN': 0, 
+                'HOME_RUSH_ATT_STD': 0,
+                'HOME_RUSH_ATT_MAX': 0,
+                'HOME_RUSH_ATT_MIN': 0,
+                'HOME_RUSH_YDS_MEAN': 0, 
+                'HOME_RUSH_YDS_STD': 0,
+                'HOME_RUSH_YDS_MAX': 0,
+                'HOME_RUSH_YDS_MIN': 0,
+                'HOME_RUSH_TD_MEAN': 0, 
+                'HOME_RUSH_TD_STD': 0,
+                'HOME_RUSH_TD_MAX': 0,
+                'HOME_RUSH_TD_MIN': 0,
+                'HOME_RUSH_1D_MEAN': 0, 
+                'HOME_RUSH_1D_STD': 0,
+                'HOME_RUSH_1D_MAX': 0,
+                'HOME_RUSH_1D_MIN': 0,
+                'HOME_RUSH_YBC_MEAN': 0, 
+                'HOME_RUSH_YBC_STD': 0,
+                'HOME_RUSH_YBC_MAX': 0,
+                'HOME_RUSH_YBC_MIN': 0,
+                'HOME_RUSH_YBCATT_MEAN': 0, 
+                'HOME_RUSH_YBCATT_STD': 0,
+                'HOME_RUSH_YBCATT_MAX': 0,
+                'HOME_RUSH_YBCATT_MIN': 0,
+                'HOME_RUSH_YAC_MEAN': 0, 
+                'HOME_RUSH_YAC_STD': 0,
+                'HOME_RUSH_YAC_MAX': 0,
+                'HOME_RUSH_YAC_MIN': 0,
+                'HOME_RUSH_YACATT_MEAN': 0, 
+                'HOME_RUSH_YACATT_STD': 0,
+                'HOME_RUSH_YACATT_MAX': 0,
+                'HOME_RUSH_YACATT_MIN': 0,
+                'HOME_RUSH_BRKTKL_MEAN': 0, 
+                'HOME_RUSH_BRKTKL_STD': 0,
+                'HOME_RUSH_BRKTKL_MAX': 0,
+                'HOME_RUSH_BRKTKL_MIN': 0,
+                'HOME_RUSH_ATTBR_MEAN': 0, 
+                'HOME_RUSH_ATTBR_STD': 0,
+                'HOME_RUSH_ATTBR_MAX': 0,
+                'HOME_RUSH_ATTBR_MIN': 0,
                 'Home-Team-Win': home_team_win,
                 'SCORE': int(AWAY_SCORE)+int(HOME_SCORE),
                 'OU': OU,
