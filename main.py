@@ -22,7 +22,6 @@ now_parsed += timedelta(days=7)
 then_ref = f"{now_parsed.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-7]}Z"
 
 odds_url = f"https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds/?apiKey=411db26899936c6f4079cdb15f258d6b&regions=us&markets=h2h,totals,spreads&commenceTimeFrom={now_ref}&commenceTimeTo={then_ref}"
-# odds_url = f"https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds/?apiKey=411db26899936c6f4079cdb15f258d6b&regions=us&markets=h2h,totals&commenceTimeFrom={then_ref}"
 # season stats url for chicago bears (team 3)
 data_url = "https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2024/types/2/teams/3/statistics"
 
@@ -83,7 +82,8 @@ def createTodaysGames(games_odds, df):
 
 
 def main():
-    if args.odds:
+    if args.odds and args.apikey:
+        odds_url = f"https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds/?apiKey={args.apikey}&regions=us&markets=h2h,totals,spreads&commenceTimeFrom={now_ref}&commenceTimeTo={then_ref}"
         # odds = SbrOddsProvider(sportsbook=args.odds).get_odds()
         # helper tool to get games from odds, will need to fix up current index
         odds = get_json_data(odds_url)
@@ -98,7 +98,7 @@ def main():
             for go in games_odds:
                 print(f"{go['away']} ({decimal_to_american(go['away_ml'])}) @ {go['home']} ({decimal_to_american(go['home_ml'])})")
     else:
-        print('must select sportsbook')
+        print('must select sportsbook and api key')
         return
 
     if args.week:
@@ -123,6 +123,7 @@ if __name__ == "__main__":
     parser.add_argument('-odds', help='Sportsbook to fetch from. (fanduel, draftkings, betmgm, pointsbet, caesars, wynn, bet_rivers_ny')
     parser.add_argument('-week', help="Run small sample size of current season (up to given week) against trained model, as opposed to last season")
     parser.add_argument('-overs', action='store_true', help="Only display overs")
+    parser.add_argument('-apikey', action='store_true', help="api key")
     # parser.add_argument('-xgb', action='store_true', help='Run with XGBoost Model')
     # parser.add_argument('-kc', action='store_true', help='Calculates percentage of bankroll to bet based on model edge')
     # parser.add_argument('-bank', help="Bankroll Value (int)")
