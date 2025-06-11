@@ -1,0 +1,8 @@
+*.sqlite
+Models/
+Logs/
+Cron-Logs/
+__pycache__/
+Data/
+Tests/
+ColabNotebook.ipynb
