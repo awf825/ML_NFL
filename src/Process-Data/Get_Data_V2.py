@@ -87,6 +87,50 @@ for year in years:
                     x = comment.extract()
                     vis_full = ''
                     home_full = ''
+                    if "game_info" in x:
+                        try:
+                            comment_soup =  BeautifulSoup(x, 'html.parser')
+                            table = comment_soup.find('table', id="game_info")
+                            points_row = table.findAll("tr")[-1]
+                            spread_row = table.findAll("tr")[-2]
+                            weather_row = table.findAll("tr")[-3]
+                            surface_row = table.findAll("tr")[-6]
+                            roof_row = table.findAll("tr")[-7]
+
+                            OU = points_row.find('td', {'data-stat':'stat'}).get_text().split(" ")[0]
+                            if int(AWAY_SCORE)+int(HOME_SCORE) > float(OU):
+                                OU_COVER = 1.0
+                            else:
+                                OU_COVER = 0.0
+
+                            # spread is always expressed as the favorite
+                            SPREAD = spread_row.find('td', {'data-stat':'stat'}).get_text().split("-")[1]
+                            favorite = spread_row.find('td', {'data-stat':'stat'}).get_text().split("-")[0]
+                            if favorite == vis_full and ( AWAY_SCORE-HOME_SCORE > SPREAD ):
+                                SPREAD_COVER = 1.0
+                            elif favorite == home_full and ( HOME_SCORE-AWAY_SCORE > SPREAD ):
+                                SPREAD_COVER = 1.0
+                            else:
+                                SPREAD_COVER = 0.0
+
+                            weather = weather_row.find('td', {'data-stat':'stat'}).get_text().split(",")
+                            TEMP = weather[0].strip()
+                            WIND_SPEED = weather[1].strip()
+
+                            SURFACE = weather_row.find('td', {'data-stat':'stat'}).get_text().strip()
+                            ROOF = roof_row.find('td', {'data-stat':'stat'}).get_text().strip()
+
+                            # TODO: get divisional matchup status
+
+                        except:
+                            OU_COVER = -1
+                            OU = -1
+                            SPREAD = -1
+                            SPREAD_COVER = -1
+                            WIND_SPEED = -1
+                            TEMP = -1
+                            SURFACE = -1
+                            ROOF = -1
                     if "team_stats" in x:
                         comment_soup =  BeautifulSoup(x, 'html.parser')
                         table = comment_soup.find('table', id="team_stats")
@@ -198,6 +242,8 @@ for year in years:
                         table = pd.read_sql(f"SELECT name FROM sqlite_master WHERE type='table' AND name=\"teams_{year}\"", teams_con)
                         if table.empty:
                             # if this table is empty, this data will never be available to any team
+                            AWAY_SOS = -1
+                            HOME_SOS = -1
                             AWAY_SOS_GAME = -1
                             HOME_SOS_GAME = -1
                             AWAY_FD_MEAN = -1 
@@ -361,16 +407,16 @@ for year in years:
                             HOME_TOP_MAX = -1
                             HOME_TOP_MIN = -1
                         else:
-                            teams_cursor.execute(f"SELECT avg(WIN) FROM teams_{year} WHERE (WEEK < ?) and TEAM = ? order by WEEK desc;", (week, vis))
+                            teams_cursor.execute(f"SELECT avg(WIN) FROM teams_{year} WHERE (WEEK < ?) and TEAM_NAME = ? order by WEEK desc;", (week, vis))
                             away_win_pct = teams_cursor.fetchone()
                             HOME_SOS_GAME = away_win_pct[0] #add to opposite teams sos
 
-                            teams_cursor.execute(f"SELECT avg(WIN) FROM teams_{year} WHERE (WEEK < ?) and TEAM = ? order by WEEK desc;", (week, home))
+                            teams_cursor.execute(f"SELECT avg(WIN) FROM teams_{year} WHERE (WEEK < ?) and TEAM_NAME = ? order by WEEK desc;", (week, home))
                             home_win_pct = teams_cursor.fetchone()
                             AWAY_SOS_GAME = home_win_pct[0] #add to opposite teams sos
 
-                            away_df = pd.read_sql_query(f"SELECT * FROM teams_{year} WHERE (WEEK < {week}) and TEAM = {vis} order by WEEK desc;", teams_con)
-                            home_df = pd.read_sql_query(f"SELECT * FROM teams_{year} WHERE (WEEK < {week}) and TEAM = {home} order by WEEK desc;", teams_con)
+                            away_df = pd.read_sql_query(f"SELECT * FROM teams_{year} WHERE (WEEK < {week}) and TEAM_NAME = {vis} order by WEEK desc;", teams_con)
+                            home_df = pd.read_sql_query(f"SELECT * FROM teams_{year} WHERE (WEEK < {week}) and TEAM_NAME = {home} order by WEEK desc;", teams_con)
 
                             AWAY_SOS = away_df['SOS'].mean()
                             HOME_SOS = home_df['SOS'].mean()
@@ -378,8 +424,162 @@ for year in years:
                             AWAY_FD_STD = away_df['FD'].std()
                             AWAY_FD_MIN = away_df['FD'].min()
                             AWAY_FD_MAX = away_df['FD'].max()
-                            # ... ... ... ...
-                            # ADD ALL OF THESE COLUMNS THAT WERE PLUGGED WITH -1 ABOVE!!!!!
+                            AWAY_FD_AGAINST_MEAN = away_df['FD_AGAINST'].mean()
+                            AWAY_FD_AGAINST_STD = away_df['FD_AGAINST'].std()
+                            AWAY_FD_AGAINST_MAX = away_df['FD_AGAINST'].max()
+                            AWAY_FD_AGAINST_MIN = away_df['FD_AGAINST'].min()
+                            AWAY_SACKS_MEAN = away_df['SACKS'].mean() 
+                            AWAY_SACKS_STD = away_df['SACKS'].std()
+                            AWAY_SACKS_MAX = away_df['SACKS'].max()
+                            AWAY_SACKS_MIN = away_df['SACKS'].min()
+                            AWAY_SACKS_AGAINST_MEAN = away_df['SACKS_AGAINST'].mean() 
+                            AWAY_SACKS_AGAINST_STD = away_df['SACKS_AGAINST'].std()
+                            AWAY_SACKS_AGAINST_MAX = away_df['SACKS_AGAINST'].max()
+                            AWAY_SACKS_AGAINST_MIN = away_df['SACKS_AGAINST'].min()
+                            AWAY_SACK_YDS_MEAN = away_df['SACK_YDS'].mean() 
+                            AWAY_SACK_YDS_STD = away_df['SACK_YDS'].std()
+                            AWAY_SACK_YDS_MAX = away_df['SACK_YDS'].max()
+                            AWAY_SACK_YDS_MIN = away_df['SACK_YDS'].min()
+                            AWAY_SACK_YDS_AGAINST_MEAN = away_df['SACK_YDS_AGAINST'].mean() 
+                            AWAY_SACK_YDS_AGAINST_STD = away_df['SACK_YDS_AGAINST'].std()
+                            AWAY_SACK_YDS_AGAINST_MAX = away_df['SACK_YDS_AGAINST'].max()
+                            AWAY_SACK_YDS_AGAINST_MIN = away_df['SACK_YDS_AGAINST'].min()
+                            AWAY_TOTAL_YDS_MEAN = away_df['TOTAL_YDS'].mean() 
+                            AWAY_TOTAL_YDS_STD = away_df['TOTAL_YDS'].std()
+                            AWAY_TOTAL_YDS_MAX = away_df['TOTAL_YDS'].max()
+                            AWAY_TOTAL_YDS_MIN = away_df['TOTAL_YDS'].min()
+                            AWAY_FUMBLES_MEAN = away_df['FUMBLES'].mean() 
+                            AWAY_FUMBLES_STD = away_df['FUMBLES'].std()
+                            AWAY_FUMBLES_MAX = away_df['FUMBLES'].max()
+                            AWAY_FUMBLES_MIN = away_df['FUMBLES'].min()
+                            AWAY_FUMBLES_LOST_MEAN = away_df['FUMBLES_LOST'].mean() 
+                            AWAY_FUMBLES_LOST_STD = away_df['FUMBLES_LOST'].std()
+                            AWAY_FUMBLES_LOST_MAX = away_df['FUMBLES_LOST'].max()
+                            AWAY_FUMBLES_LOST_MIN = away_df['FUMBLES_LOST'].min()
+                            AWAY_TO_MEAN = away_df['TO'].mean() 
+                            AWAY_TO_STD = away_df['TO'].std()
+                            AWAY_TO_MAX = away_df['TO'].max()
+                            AWAY_TO_MIN = away_df['TO'].min()
+                            AWAY_TO_AGAINST_MEAN = away_df['TO_AGAINST'].mean() 
+                            AWAY_TO_AGAINST_STD = away_df['TO_AGAINST'].std()
+                            AWAY_TO_AGAINST_MAX = away_df['TO_AGAINST'].max()
+                            AWAY_TO_AGAINST_MIN = away_df['TO_AGAINST'].min()
+                            AWAY_PENALTIES_MEAN = away_df['PENALTIES'].mean() 
+                            AWAY_PENALTIES_STD = away_df['PENALTIES'].std()
+                            AWAY_PENALTIES_MAX = away_df['PENALTIES'].max()
+                            AWAY_PENALTIES_MIN = away_df['PENALTIES'].min()
+                            AWAY_PENALTY_YARDS_MEAN = away_df['PENALTY_YARDS'].mean() 
+                            AWAY_PENALTY_YARDS_STD = away_df['PENALTY_YARDS'].std()
+                            AWAY_PENALTY_YARDS_MAX = away_df['PENALTY_YARDS'].max()
+                            AWAY_PENALTY_YARDS_MIN = away_df['PENALTY_YARDS'].min()
+                            AWAY_3RD_DOWN_MEAN = away_df['3RD_DOWN'].mean() 
+                            AWAY_3RD_DOWN_STD = away_df['3RD_DOWN'].std()
+                            AWAY_3RD_DOWN_MAX = away_df['3RD_DOWN'].max()
+                            AWAY_3RD_DOWN_MIN = away_df['3RD_DOWN'].min()
+                            AWAY_3RD_DOWN_ATT_MEAN = away_df['3RD_DOWN_ATT'].mean() 
+                            AWAY_3RD_DOWN_ATT_STD = away_df['3RD_DOWN_ATT'].std()
+                            AWAY_3RD_DOWN_ATT_MAX = away_df['3RD_DOWN_ATT'].max()
+                            AWAY_3RD_DOWN_ATT_MIN = away_df['3RD_DOWN_ATT'].min()
+                            AWAY_3RD_DOWN_CONV_MEAN = away_df['3RD_DOWN_CONV'].mean() 
+                            AWAY_3RD_DOWN_CONV_STD = away_df['3RD_DOWN_CONV'].std()
+                            AWAY_3RD_DOWN_CONV_MAX = away_df['3RD_DOWN_CONV'].max()
+                            AWAY_3RD_DOWN_CONV_MIN = away_df['3RD_DOWN_CONV'].min()
+                            AWAY_3RD_DOWN_AGAINST_MEAN = away_df['3RD_DOWN_AGAINST'].mean()
+                            AWAY_3RD_DOWN_AGAINST_STD = away_df['3RD_DOWN_AGAINST'].std()
+                            AWAY_3RD_DOWN_AGAINST_MAX = away_df['3RD_DOWN_AGAINST'].max()
+                            AWAY_3RD_DOWN_AGAINST_MIN = away_df['3RD_DOWN_AGAINST'].min()
+                            AWAY_3RD_DOWN_ATT_AGAINST_MEAN = away_df['3RD_DOWN_ATT_AGAINST'].mean()
+                            AWAY_3RD_DOWN_ATT_AGAINST_STD = away_df['3RD_DOWN_ATT_AGAINST'].std()
+                            AWAY_3RD_DOWN_ATT_AGAINST_MAX = away_df['3RD_DOWN_ATT_AGAINST'].max()
+                            AWAY_3RD_DOWN_ATT_AGAINST_MIN = away_df['3RD_DOWN_ATT_AGAINST'].min()
+                            AWAY_3RD_DOWN_CONV_AGAINST_MEAN = away_df['3RD_DOWN_CONV_AGAINST'].mean()
+                            AWAY_3RD_DOWN_CONV_AGAINST_STD = away_df['3RD_DOWN_CONV_AGAINST'].std()
+                            AWAY_3RD_DOWN_CONV_AGAINST_MAX = away_df['3RD_DOWN_CONV_AGAINST'].max()
+                            AWAY_3RD_DOWN_CONV_AGAINST_MIN = away_df['3RD_DOWN_CONV_AGAINST'].min()
+                            AWAY_TOP_MEAN = away_df['TOP'].mean() 
+                            AWAY_TOP_STD = away_df['TOP'].std()
+                            AWAY_TOP_MAX = away_df['TOP'].max()
+                            AWAY_TOP_MIN = away_df['TOP'].min() 
+                            HOME_FD_MEAN = home_df['FD'].mean()
+                            HOME_FD_STD = home_df['FD'].std()
+                            HOME_FD_MIN = home_df['FD'].min()
+                            HOME_FD_MAX = home_df['FD'].max()
+                            HOME_FD_AGAINST_MEAN = home_df['FD_AGAINST'].mean()
+                            HOME_FD_AGAINST_STD = home_df['FD_AGAINST'].std()
+                            HOME_FD_AGAINST_MAX = home_df['FD_AGAINST'].max()
+                            HOME_FD_AGAINST_MIN = home_df['FD_AGAINST'].min()
+                            HOME_SACKS_MEAN = home_df['SACKS'].mean() 
+                            HOME_SACKS_STD = home_df['SACKS'].std()
+                            HOME_SACKS_MAX = home_df['SACKS'].max()
+                            HOME_SACKS_MIN = home_df['SACKS'].min()
+                            HOME_SACKS_AGAINST_MEAN = home_df['SACKS_AGAINST'].mean() 
+                            HOME_SACKS_AGAINST_STD = home_df['SACKS_AGAINST'].std()
+                            HOME_SACKS_AGAINST_MAX = home_df['SACKS_AGAINST'].max()
+                            HOME_SACKS_AGAINST_MIN = home_df['SACKS_AGAINST'].min()
+                            HOME_SACK_YDS_MEAN = home_df['SACK_YDS'].mean() 
+                            HOME_SACK_YDS_STD = home_df['SACK_YDS'].std()
+                            HOME_SACK_YDS_MAX = home_df['SACK_YDS'].max()
+                            HOME_SACK_YDS_MIN = home_df['SACK_YDS'].min()
+                            HOME_SACK_YDS_AGAINST_MEAN = home_df['SACK_YDS_AGAINST'].mean() 
+                            HOME_SACK_YDS_AGAINST_STD = home_df['SACK_YDS_AGAINST'].std()
+                            HOME_SACK_YDS_AGAINST_MAX = home_df['SACK_YDS_AGAINST'].max()
+                            HOME_SACK_YDS_AGAINST_MIN = home_df['SACK_YDS_AGAINST'].min()
+                            HOME_TOTAL_YDS_MEAN = home_df['TOTAL_YDS'].mean() 
+                            HOME_TOTAL_YDS_STD = home_df['TOTAL_YDS'].std()
+                            HOME_TOTAL_YDS_MAX = home_df['TOTAL_YDS'].max()
+                            HOME_TOTAL_YDS_MIN = home_df['TOTAL_YDS'].min()
+                            HOME_FUMBLES_MEAN = home_df['FUMBLES'].mean() 
+                            HOME_FUMBLES_STD = home_df['FUMBLES'].std()
+                            HOME_FUMBLES_MAX = home_df['FUMBLES'].max()
+                            HOME_FUMBLES_MIN = home_df['FUMBLES'].min()
+                            HOME_FUMBLES_LOST_MEAN = home_df['FUMBLES_LOST'].mean() 
+                            HOME_FUMBLES_LOST_STD = home_df['FUMBLES_LOST'].std()
+                            HOME_FUMBLES_LOST_MAX = home_df['FUMBLES_LOST'].max()
+                            HOME_FUMBLES_LOST_MIN = home_df['FUMBLES_LOST'].min()
+                            HOME_TO_MEAN = home_df['TO'].mean() 
+                            HOME_TO_STD = home_df['TO'].std()
+                            HOME_TO_MAX = home_df['TO'].max()
+                            HOME_TO_MIN = home_df['TO'].min()
+                            HOME_TO_AGAINST_MEAN = home_df['TO_AGAINST'].mean() 
+                            HOME_TO_AGAINST_STD = home_df['TO_AGAINST'].std()
+                            HOME_TO_AGAINST_MAX = home_df['TO_AGAINST'].max()
+                            HOME_TO_AGAINST_MIN = home_df['TO_AGAINST'].min()
+                            HOME_PENALTIES_MEAN = home_df['PENALTIES'].mean() 
+                            HOME_PENALTIES_STD = home_df['PENALTIES'].std()
+                            HOME_PENALTIES_MAX = home_df['PENALTIES'].max()
+                            HOME_PENALTIES_MIN = home_df['PENALTIES'].min()
+                            HOME_PENALTY_YARDS_MEAN = home_df['PENALTY_YARDS'].mean() 
+                            HOME_PENALTY_YARDS_STD = home_df['PENALTY_YARDS'].std()
+                            HOME_PENALTY_YARDS_MAX = home_df['PENALTY_YARDS'].max()
+                            HOME_PENALTY_YARDS_MIN = home_df['PENALTY_YARDS'].min()
+                            HOME_3RD_DOWN_MEAN = home_df['3RD_DOWN'].mean() 
+                            HOME_3RD_DOWN_STD = home_df['3RD_DOWN'].std()
+                            HOME_3RD_DOWN_MAX = home_df['3RD_DOWN'].max()
+                            HOME_3RD_DOWN_MIN = home_df['3RD_DOWN'].min()
+                            HOME_3RD_DOWN_ATT_MEAN = home_df['3RD_DOWN_ATT'].mean() 
+                            HOME_3RD_DOWN_ATT_STD = home_df['3RD_DOWN_ATT'].std()
+                            HOME_3RD_DOWN_ATT_MAX = home_df['3RD_DOWN_ATT'].max()
+                            HOME_3RD_DOWN_ATT_MIN = home_df['3RD_DOWN_ATT'].min()
+                            HOME_3RD_DOWN_CONV_MEAN = home_df['3RD_DOWN_CONV'].mean() 
+                            HOME_3RD_DOWN_CONV_STD = home_df['3RD_DOWN_CONV'].std()
+                            HOME_3RD_DOWN_CONV_MAX = home_df['3RD_DOWN_CONV'].max()
+                            HOME_3RD_DOWN_CONV_MIN = home_df['3RD_DOWN_CONV'].min()
+                            HOME_3RD_DOWN_AGAINST_MEAN = home_df['3RD_DOWN_AGAINST'].mean()
+                            HOME_3RD_DOWN_AGAINST_STD = home_df['3RD_DOWN_AGAINST'].std()
+                            HOME_3RD_DOWN_AGAINST_MAX = home_df['3RD_DOWN_AGAINST'].max()
+                            HOME_3RD_DOWN_AGAINST_MIN = home_df['3RD_DOWN_AGAINST'].min()
+                            HOME_3RD_DOWN_ATT_AGAINST_MEAN = home_df['3RD_DOWN_ATT_AGAINST'].mean()
+                            HOME_3RD_DOWN_ATT_AGAINST_STD = home_df['3RD_DOWN_ATT_AGAINST'].std()
+                            HOME_3RD_DOWN_ATT_AGAINST_MAX = home_df['3RD_DOWN_ATT_AGAINST'].max()
+                            HOME_3RD_DOWN_ATT_AGAINST_MIN = home_df['3RD_DOWN_ATT_AGAINST'].min()
+                            HOME_3RD_DOWN_CONV_AGAINST_MEAN = home_df['3RD_DOWN_CONV_AGAINST'].mean()
+                            HOME_3RD_DOWN_CONV_AGAINST_STD = home_df['3RD_DOWN_CONV_AGAINST'].std()
+                            HOME_3RD_DOWN_CONV_AGAINST_MAX = home_df['3RD_DOWN_CONV_AGAINST'].max()
+                            HOME_3RD_DOWN_CONV_AGAINST_MIN = home_df['3RD_DOWN_CONV_AGAINST'].min()
+                            HOME_TOP_MEAN = home_df['TOP'].mean() 
+                            HOME_TOP_STD = home_df['TOP'].std()
+                            HOME_TOP_MAX = home_df['TOP'].max()
+                            HOME_TOP_MIN = home_df['TOP'].min()
 
                         # now append the data, so it doesn't mess up the historical load
                         vis_team_data.append({
@@ -470,62 +670,129 @@ for year in years:
 
                         df = pd.read_html(str(adv_passing_table))[0]
 
-
                         df = df[df['Player'] != 'Player']
                         df['WEEK'] = week
                         df['YEAR'] = year
+                        df['BIG_GAME_WIN'] = -1 # use as a default value: -1 means this was not a 'big game'
 
-                        df.to_sql(f"TEST_passers_{year}", passers_con, if_exists="replace")
-                        # df = df[df['Att'] > 2]
                         visiting_passer = df.loc[df['Tm'] == vis].iloc[0]
                         home_passer = df.loc[df['Tm'] == home].iloc[0]
 
-                        AWAY_PASS_COMP = visiting_passer["Cmp"]
-                        AWAY_PASS_ATT = visiting_passer["Att"]
-                        AWAY_PASS_YDS = visiting_passer["Yds"]
-                        AWAY_PASS_1D = visiting_passer["1D"]
-                        AWAY_PASS_1DPCT = visiting_passer["1D%"]
-                        AWAY_PASS_IAY = visiting_passer["IAY"]
-                        AWAY_PASS_IAYPA = visiting_passer["IAY/PA"]
-                        AWAY_PASS_CAY = visiting_passer["CAY"]
-                        AWAY_PASS_CAYCMP = visiting_passer["CAY/Cmp"]
-                        AWAY_PASS_CAYPA = visiting_passer['CAY/PA']
-                        AWAY_PASS_YAC = visiting_passer['YAC']
-                        AWAY_PASS_YACCMP = visiting_passer['YAC/Cmp']
-                        AWAY_PASS_DROPS = visiting_passer['Drops']
-                        AWAY_PASS_DROPPCT = visiting_passer["Drop%"]
-                        AWAY_PASS_BADTH = visiting_passer["BadTh"]
-                        AWAY_PASS_SK = visiting_passer["Sk"]
-                        AWAY_PASS_BLTZ = visiting_passer["Bltz"]
-                        AWAY_PASS_HRRY = visiting_passer["Hrry"]
-                        AWAY_PASS_HITS = visiting_passer["Hits"]
-                        AWAY_PASS_PRSS = visiting_passer["Prss"]
-                        AWAY_PASS_PRSSPCT = visiting_passer["Prss%"]
-                        AWAY_PASS_SCRM = visiting_passer["Scrm"]
-                        AWAY_PASS_YDSSCRM = visiting_passer["Yds/Scr"]
-                        HOME_PASS_COMP = home_passer["Cmp"]
-                        HOME_PASS_ATT = home_passer["Att"]
-                        HOME_PASS_YDS = home_passer["Yds"]
-                        HOME_PASS_1D = home_passer["1D"]
-                        HOME_PASS_1DPCT = home_passer["1D%"]
-                        HOME_PASS_IAY = home_passer["IAY"]
-                        HOME_PASS_IAYPA = home_passer["IAY/PA"]
-                        HOME_PASS_CAY = home_passer["CAY"]
-                        HOME_PASS_CAYCMP = home_passer["CAY/Cmp"]
-                        HOME_PASS_CAYPA = home_passer['CAY/PA']
-                        HOME_PASS_YAC = home_passer['YAC']
-                        HOME_PASS_YACCMP = home_passer['YAC/Cmp']
-                        HOME_PASS_DROPS = home_passer['Drops']
-                        HOME_PASS_DROPPCT = home_passer["Drop%"]
-                        HOME_PASS_BADTH = home_passer["BadTh"]
-                        HOME_PASS_SK = home_passer["Sk"]
-                        HOME_PASS_BLTZ = home_passer["Bltz"]
-                        HOME_PASS_HRRY = home_passer["Hrry"]
-                        HOME_PASS_HITS = home_passer["Hits"]
-                        HOME_PASS_PRSS = home_passer["Prss"]
-                        HOME_PASS_PRSSPCT = home_passer["Prss%"]
-                        HOME_PASS_SCRM = home_passer["Scrm"]
-                        HOME_PASS_YDSSCRM = home_passer["Yds/Scr"]
+                        SPREAD_ABS = abs(float(SPREAD))
+                        if SPREAD_ABS <= 3.0:
+                            if home_team_win > 0:
+                                home_passer['BIG_GAME_WIN'] = 1.0
+                                visiting_passer['BIG_GAME_WIN'] = 0.0
+                            else:
+                                visiting_passer['BIG_GAME_WIN'] = 1.0
+                                home_passer['BIG_GAME_WIN'] = 0.0
+
+
+                        passers_frame = pd.DataFrame([visiting_passer.to_dict(), home_passer.to_dict()])
+                        passers_frame.reset_index(drop=True, inplace=True)
+
+                        passers_frame['1D%'] = passers_frame['1D%'].str.replace('%', '', regex=False).astype(float) / 100
+                        passers_frame['Drop%'] = passers_frame['Drop%'].str.replace('%', '', regex=False).astype(float) / 100
+                        passers_frame['Prss%'] = passers_frame['Prss%'].str.replace('%', '', regex=False).astype(float) / 100
+                        passers_frame['Bad%'] = passers_frame['Bad%'].str.replace('%', '', regex=False).astype(float) / 100
+                        
+                        print(passers_frame)
+                        exit(0)
+                        
+
+                        # df = df[df['Att'] > 2]
+
+                        # If season passing table is empty, we want to pass -1 into each variable for the game stats
+                        table = pd.read_sql(f"SELECT name FROM sqlite_master WHERE type='table' AND name=\"passers_{year}\"", passers_con)
+                        if table.empty:
+                            AWAY_PASS_COMP_MEAN = -1 
+                            AWAY_PASS_COMP_STD = -1
+                            AWAY_PASS_COMP_MAX = -1
+                            AWAY_PASS_COMP_MIN = -1
+                            # TODO ... ... ...
+                        else:
+                            # if the table is not empty, take the mean, std, max and min from each of the RELEVANT VALues
+                            away_passer_df = pd.read_sql_query(f"SELECT * FROM passers_{year} WHERE (WEEK < {week}) and Player = {visiting_passer['Player']} order by WEEK desc;", passers_con)
+                            home_passer_df = pd.read_sql_query(f"SELECT * FROM passers_{year} WHERE (WEEK < {week}) and Player = {home_passer['Player']} order by WEEK desc;", passers_con)
+
+                            AWAY_PASS_COMP_MEAN = away_passer_df['AWAY_PASS_COMP'].mean()
+                            AWAY_PASS_COMP_STD = away_passer_df['AWAY_PASS_COMP'].std()
+                            AWAY_PASS_COMP_MAX = away_passer_df['AWAY_PASS_COMP'].min()
+                            AWAY_PASS_COMP_MIN = away_passer_df['AWAY_PASS_COMP'].max()
+                            # TODO ... ... ...
+
+                        # If CAREER passing table is empty, we want to pass passer's career stats from 2018 to present day
+                        table = pd.read_sql(f"SELECT name FROM sqlite_master WHERE type='table' AND name='passers_2018-present'", passers_con)
+                        if table.empty:
+                            AWAY_PASS_COMP_CAREER = -1
+                            AWAY_PASS_ATT_CAREER = -1
+                            AWAY_PASS_YDS_CAREER = -1
+                            # TODO ... ... ...
+                        else:
+                            # if the table is not empty, take the mean, std, max and min from each of the RELEVANT VALues
+                            away_passer_career_df = pd.read_sql_query(f"SELECT * FROM passers_2018-present WHERE and Player = {visiting_passer['Player']};", passers_con)
+                            home_passer_career_df = pd.read_sql_query(f"SELECT * FROM passers_2018-present WHERE and Player = {home_passer['Player']};", passers_con)
+
+                            AWAY_PASS_COMP_CAREER_MEAN = away_passer_career_df['AWAY_PASS_COMP'].mean()
+                            AWAY_PASS_COMP_CAREER_STD = away_passer_career_df['AWAY_PASS_COMP'].std()
+                            AWAY_PASS_COMP_CAREER_MAX = away_passer_career_df['AWAY_PASS_COMP'].min()
+                            AWAY_PASS_COMP_CAREER_MIN = away_passer_career_df['AWAY_PASS_COMP'].max()
+                            # TODO ... ... ...
+
+                        # at any rate: append the flat passer values to passers_{year}, as well as passers_2018-present, after adding 'big game' wins
+                        passers_frame.to_sql(f"passers_{year}", passers_con, if_exists="append")
+                        passers_frame.to_sql(f"passers_2018-present", passers_con, if_exists="append")
+
+                        exit(0)
+                        # visiting_passer = df.loc[df['Tm'] == vis].iloc[0]
+                        # home_passer = df.loc[df['Tm'] == home].iloc[0]
+
+                        # AWAY_PASS_COMP = visiting_passer["Cmp"]
+                        # AWAY_PASS_ATT = visiting_passer["Att"]
+                        # AWAY_PASS_YDS = visiting_passer["Yds"]
+                        # AWAY_PASS_1D = visiting_passer["1D"]
+                        # AWAY_PASS_1DPCT = visiting_passer["1D%"]
+                        # AWAY_PASS_IAY = visiting_passer["IAY"]
+                        # AWAY_PASS_IAYPA = visiting_passer["IAY/PA"]
+                        # AWAY_PASS_CAY = visiting_passer["CAY"]
+                        # AWAY_PASS_CAYCMP = visiting_passer["CAY/Cmp"]
+                        # AWAY_PASS_CAYPA = visiting_passer['CAY/PA']
+                        # AWAY_PASS_YAC = visiting_passer['YAC']
+                        # AWAY_PASS_YACCMP = visiting_passer['YAC/Cmp']
+                        # AWAY_PASS_DROPS = visiting_passer['Drops']
+                        # AWAY_PASS_DROPPCT = visiting_passer["Drop%"]
+                        # AWAY_PASS_BADTH = visiting_passer["BadTh"]
+                        # AWAY_PASS_SK = visiting_passer["Sk"]
+                        # AWAY_PASS_BLTZ = visiting_passer["Bltz"]
+                        # AWAY_PASS_HRRY = visiting_passer["Hrry"]
+                        # AWAY_PASS_HITS = visiting_passer["Hits"]
+                        # AWAY_PASS_PRSS = visiting_passer["Prss"]
+                        # AWAY_PASS_PRSSPCT = visiting_passer["Prss%"]
+                        # AWAY_PASS_SCRM = visiting_passer["Scrm"]
+                        # AWAY_PASS_YDSSCRM = visiting_passer["Yds/Scr"]
+                        # HOME_PASS_COMP = home_passer["Cmp"]
+                        # HOME_PASS_ATT = home_passer["Att"]
+                        # HOME_PASS_YDS = home_passer["Yds"]
+                        # HOME_PASS_1D = home_passer["1D"]
+                        # HOME_PASS_1DPCT = home_passer["1D%"]
+                        # HOME_PASS_IAY = home_passer["IAY"]
+                        # HOME_PASS_IAYPA = home_passer["IAY/PA"]
+                        # HOME_PASS_CAY = home_passer["CAY"]
+                        # HOME_PASS_CAYCMP = home_passer["CAY/Cmp"]
+                        # HOME_PASS_CAYPA = home_passer['CAY/PA']
+                        # HOME_PASS_YAC = home_passer['YAC']
+                        # HOME_PASS_YACCMP = home_passer['YAC/Cmp']
+                        # HOME_PASS_DROPS = home_passer['Drops']
+                        # HOME_PASS_DROPPCT = home_passer["Drop%"]
+                        # HOME_PASS_BADTH = home_passer["BadTh"]
+                        # HOME_PASS_SK = home_passer["Sk"]
+                        # HOME_PASS_BLTZ = home_passer["Bltz"]
+                        # HOME_PASS_HRRY = home_passer["Hrry"]
+                        # HOME_PASS_HITS = home_passer["Hits"]
+                        # HOME_PASS_PRSS = home_passer["Prss"]
+                        # HOME_PASS_PRSSPCT = home_passer["Prss%"]
+                        # HOME_PASS_SCRM = home_passer["Scrm"]
+                        # HOME_PASS_YDSSCRM = home_passer["Yds/Scr"]
 
                     #######################################################
                     #####   END COLLECTING DATA FOR PASSER TABLES     #####
@@ -568,6 +835,8 @@ for year in years:
                         HOME_RUSH_BRKTKL = home_rushers['BrkTkl'].apply(pd.to_numeric).sum()
                         HOME_RUSH_ATTBR = home_rushers['Att/Br'].apply(pd.to_numeric).mean()
 
+                        # TODO: calculate the necessities of these stats like with advanced passing. Career stats are probably not necessary
+
                     #######################################################
                     #####   END COLLECTING DATA FOR RUSHER TABLES     #####
                     #######################################################
@@ -605,57 +874,9 @@ for year in years:
                     #####   END COLLECTING DATA FOR SNAPS TABLES      #####
                     #######################################################
 
-                    if "game_info" in x:
-                        try:
-                            comment_soup =  BeautifulSoup(x, 'html.parser')
-                            table = comment_soup.find('table', id="game_info")
-                            points_row = table.findAll("tr")[-1]
-                            spread_row = table.findAll("tr")[-2]
-                            weather_row = table.findAll("tr")[-3]
-                            surface_row = table.findAll("tr")[-6]
-                            roof_row = table.findAll("tr")[-7]
-
-                            OU = points_row.find('td', {'data-stat':'stat'}).get_text().split(" ")[0]
-                            if int(AWAY_SCORE)+int(HOME_SCORE) > float(OU):
-                                OU_COVER = 1.0
-                            else:
-                                OU_COVER = 0.0
-
-                            # spread is always expressed as the favorite
-                            SPREAD = spread_row.find('td', {'data-stat':'stat'}).get_text().split("-")[1]
-                            favorite = spread_row.find('td', {'data-stat':'stat'}).get_text().split("-")[0]
-                            if favorite == vis_full and ( AWAY_SCORE-HOME_SCORE > SPREAD ):
-                                SPREAD_COVER = 1.0
-                            elif favorite == home_full and ( HOME_SCORE-AWAY_SCORE > SPREAD ):
-                                SPREAD_COVER = 1.0
-                            else:
-                                SPREAD_COVER = 0.0
-
-                            weather = weather_row.find('td', {'data-stat':'stat'}).get_text().split(",")
-                            TEMP = weather[0].strip()
-                            WIND_SPEED = weather[1].strip()
-
-                            SURFACE = weather_row.find('td', {'data-stat':'stat'}).get_text().strip()
-                            ROOF = roof_row.find('td', {'data-stat':'stat'}).get_text().strip()
-
-                        except:
-                            OU_COVER = -1
-                            OU = -1
-                            SPREAD = -1
-                            SPREAD_COVER = -1
-                            WIND_SPEED = -1
-                            TEMP = -1
-                            SURFACE = -1
-                            ROOF = -1
-
             except Exception as e: 
                 print('could not get game data: ', e)
                 
-            # FOR TRAINING DATA, TAKE MEAN, STD, MAX, AND MIN OF EACH AND EVERY STAT, UP TO THE POINT IN TIME WHEN THE GAME WAS PLAYED
-                #  EXCEPT: QB WINS, AGES, USAGE/snaps, DIV MATCH
-            # TEAM STATS AND RUSHER STAS SHOULD ONLY BE TAKEN FROM CURRENT SEASON. 
-            # PASSER STATS SHOULD BE CAREER BASED
-                # USE -1 IF NO DATA IS AVAILABLE; MINIMUM OF 2 GAMES TO USE STD; MINIMUM OF 3 TO USE MIN AND MAX
 
             season_data.append({
                 'SEASON': year,
@@ -664,101 +885,100 @@ for year in years:
                 'HOME_TEAM_NAME': home,
                 'AWAY_SCORE': AWAY_SCORE,
                 'HOME_SCORE': HOME_SCORE,
-                'DIV_MATCH': 0,
                 'AWAY_SOS': AWAY_SOS, # NEED TO GET AVERAGE SOS ENTERING GAME
+                'HOME_SOS': HOME_SOS,
                 'AWAY_UNIQ_STARTERS_DEFENSE': 0,
                 'AWAY_UNIQ_STARTERS_OL':0,
                 'AWAY_UNIQ_STARTERS_WR':0,
                 'HOME_UNIQ_STARTERS_DEFENSE': 0,
                 'HOME_UNIQ_STARTERS_OL':0,
                 'HOME_UNIQ_STARTERS_WR':0,
-                'HOME_SOS': HOME_SOS,
                 # 'AWAY_DEFENSE_YRS_EXP': 0,
                 # 'AWAY_OL_YRS_EXP': 0,
                 # 'AWAY_WR_YRS_EXP': 0,
                 # 'HOME_DEFENSE_YRS_EXP': 0, 
                 # 'HOME_OL_YRS_EXP': 0,
                 # 'HOME_WR_YRS_EXP': 0,
-                'AWAY_FD_MEAN': 0, 
-                'AWAY_FD_STD': 0,
-                'AWAY_FD_MAX': 0,
-                'AWAY_FD_MIN': 0,
-                'AWAY_FD_AGAINST_MEAN': 0,
-                'AWAY_FD_AGAINST_STD': 0,
-                'AWAY_FD_AGAINST_MAX': 0,
-                'AWAY_FD_AGAINST_MIN': 0,
-                'AWAY_SACKS_MEAN': 0, 
-                'AWAY_SACKS_STD': 0,
-                'AWAY_SACKS_MAX': 0,
-                'AWAY_SACKS_MIN': 0,
-                'AWAY_SACKS_AGAINST_MEAN': 0, 
-                'AWAY_SACKS_AGAINST_STD': 0,
-                'AWAY_SACKS_AGAINST_MAX': 0,
-                'AWAY_SACKS_AGAINST_MIN': 0,
-                'AWAY_SACK_YDS_MEAN': 0, 
-                'AWAY_SACK_YDS_STD': 0,
-                'AWAY_SACK_YDS_MAX': 0,
-                'AWAY_SACK_YDS_MIN': 0,
-                'AWAY_SACK_YDS_AGAINST_MEAN': 0, 
-                'AWAY_SACK_YDS_AGAINST_STD': 0,
-                'AWAY_SACK_YDS_AGAINST_MAX': 0,
-                'AWAY_SACK_YDS_AGAINST_MIN': 0,
-                'AWAY_TOTAL_YDS_MEAN': 0, 
-                'AWAY_TOTAL_YDS_STD': 0,
-                'AWAY_TOTAL_YDS_MAX': 0,
-                'AWAY_TOTAL_YDS_MIN': 0,
-                'AWAY_FUMBLES_MEAN': 0, 
-                'AWAY_FUMBLES_STD': 0,
-                'AWAY_FUMBLES_MAX': 0,
-                'AWAY_FUMBLES_MIN': 0,
-                'AWAY_FUMBLES_LOST_MEAN': 0, 
-                'AWAY_FUMBLES_LOST_STD': 0,
-                'AWAY_FUMBLES_LOST_MAX': 0,
-                'AWAY_FUMBLES_LOST_MIN': 0,
-                'AWAY_TO_MEAN': 0, 
-                'AWAY_TO_STD': 0,
-                'AWAY_TO_MAX': 0,
-                'AWAY_TO_MIN': 0,
-                'AWAY_TO_AGAINST_MEAN': 0, 
-                'AWAY_TO_AGAINST_STD': 0,
-                'AWAY_TO_AGAINST_MAX': 0,
-                'AWAY_TO_AGAINST_MIN': 0,
-                'AWAY_PENALTIES_MEAN': 0, 
-                'AWAY_PENALTIES_STD': 0,
-                'AWAY_PENALTIES_MAX': 0,
-                'AWAY_PENALTIES_MIN': 0,
-                'AWAY_PENALTY_YARDS_MEAN': 0, 
-                'AWAY_PENALTY_YARDS_STD': 0,
-                'AWAY_PENALTY_YARDS_MAX': 0,
-                'AWAY_PENALTY_YARDS_MIN': 0,
-                'AWAY_3RD_DOWN_MEAN': 0, 
-                'AWAY_3RD_DOWN_STD': 0,
-                'AWAY_3RD_DOWN_MAX': 0,
-                'AWAY_3RD_DOWN_MIN': 0,
-                'AWAY_3RD_DOWN_ATT_MEAN': 0, 
-                'AWAY_3RD_DOWN_ATT_STD': 0,
-                'AWAY_3RD_DOWN_ATT_MAX': 0,
-                'AWAY_3RD_DOWN_ATT_MIN': 0,
-                'AWAY_3RD_DOWN_CONV_MEAN': 0, 
-                'AWAY_3RD_DOWN_CONV_STD': 0,
-                'AWAY_3RD_DOWN_CONV_MAX': 0,
-                'AWAY_3RD_DOWN_CONV_MIN': 0,
-                'AWAY_3RD_DOWN_AGAINST_MEAN': 0,
-                'AWAY_3RD_DOWN_AGAINST_STD': 0,
-                'AWAY_3RD_DOWN_AGAINST_MAX': 0,
-                'AWAY_3RD_DOWN_AGAINST_MIN': 0,
-                'AWAY_3RD_DOWN_ATT_AGAINST_MEAN': 0,
-                'AWAY_3RD_DOWN_ATT_AGAINST_STD': 0,
-                'AWAY_3RD_DOWN_ATT_AGAINST_MAX': 0,
-                'AWAY_3RD_DOWN_ATT_AGAINST_MIN': 0,
-                'AWAY_3RD_DOWN_CONV_AGAINST_MEAN': 0,
-                'AWAY_3RD_DOWN_CONV_AGAINST_STD': 0,
-                'AWAY_3RD_DOWN_CONV_AGAINST_MAX': 0,
-                'AWAY_3RD_DOWN_CONV_AGAINST_MIN': 0,
-                'AWAY_TOP_MEAN': 0, 
-                'AWAY_TOP_STD': 0,
-                'AWAY_TOP_MAX': 0,
-                'AWAY_TOP_MIN': 0,
+                'AWAY_FD_MEAN': AWAY_FD_MEAN, 
+                'AWAY_FD_STD': AWAY_FD_STD,
+                'AWAY_FD_MAX': AWAY_FD_MAX,
+                'AWAY_FD_MIN': AWAY_FD_MIN,
+                'AWAY_FD_AGAINST_MEAN': AWAY_FD_AGAINST_MEAN,
+                'AWAY_FD_AGAINST_STD': AWAY_FD_AGAINST_STD,
+                'AWAY_FD_AGAINST_MAX': AWAY_FD_AGAINST_MAX,
+                'AWAY_FD_AGAINST_MIN': AWAY_FD_AGAINST_MIN,
+                'AWAY_SACKS_MEAN': AWAY_SACKS_MEAN, 
+                'AWAY_SACKS_STD': AWAY_SACKS_STD,
+                'AWAY_SACKS_MAX': AWAY_SACKS_MAX,
+                'AWAY_SACKS_MIN': AWAY_SACKS_MIN,
+                'AWAY_SACKS_AGAINST_MEAN': AWAY_SACKS_AGAINST_MEAN, 
+                'AWAY_SACKS_AGAINST_STD': AWAY_SACKS_AGAINST_STD,
+                'AWAY_SACKS_AGAINST_MAX': AWAY_SACKS_AGAINST_MAX,
+                'AWAY_SACKS_AGAINST_MIN': AWAY_SACKS_AGAINST_MIN,
+                'AWAY_SACK_YDS_MEAN': AWAY_SACK_YDS_MEAN, 
+                'AWAY_SACK_YDS_STD': AWAY_SACK_YDS_STD,
+                'AWAY_SACK_YDS_MAX': AWAY_SACK_YDS_MAX,
+                'AWAY_SACK_YDS_MIN': AWAY_SACK_YDS_MIN,
+                'AWAY_SACK_YDS_AGAINST_MEAN': AWAY_SACK_YDS_AGAINST_MEAN, 
+                'AWAY_SACK_YDS_AGAINST_STD': AWAY_SACK_YDS_AGAINST_STD,
+                'AWAY_SACK_YDS_AGAINST_MAX': AWAY_SACK_YDS_AGAINST_MAX,
+                'AWAY_SACK_YDS_AGAINST_MIN': AWAY_SACK_YDS_AGAINST_MIN,
+                'AWAY_TOTAL_YDS_MEAN': AWAY_TOTAL_YDS_MEAN, 
+                'AWAY_TOTAL_YDS_STD': AWAY_TOTAL_YDS_STD,
+                'AWAY_TOTAL_YDS_MAX': AWAY_TOTAL_YDS_MAX,
+                'AWAY_TOTAL_YDS_MIN': AWAY_TOTAL_YDS_MIN,
+                'AWAY_FUMBLES_MEAN': AWAY_FUMBLES_MEAN, 
+                'AWAY_FUMBLES_STD': AWAY_FUMBLES_STD,
+                'AWAY_FUMBLES_MAX': AWAY_FUMBLES_MAX,
+                'AWAY_FUMBLES_MIN': AWAY_FUMBLES_MIN,
+                'AWAY_FUMBLES_LOST_MEAN': AWAY_FUMBLES_LOST_MEAN, 
+                'AWAY_FUMBLES_LOST_STD': AWAY_FUMBLES_LOST_STD,
+                'AWAY_FUMBLES_LOST_MAX': AWAY_FUMBLES_LOST_MAX,
+                'AWAY_FUMBLES_LOST_MIN': AWAY_FUMBLES_LOST_MIN,
+                'AWAY_TO_MEAN': AWAY_TO_MEAN, 
+                'AWAY_TO_STD': AWAY_TO_STD,
+                'AWAY_TO_MAX': AWAY_TO_MAX,
+                'AWAY_TO_MIN': AWAY_TO_MIN,
+                'AWAY_TO_AGAINST_MEAN': AWAY_TO_AGAINST_MEAN, 
+                'AWAY_TO_AGAINST_STD': AWAY_TO_AGAINST_STD,
+                'AWAY_TO_AGAINST_MAX': AWAY_TO_AGAINST_MAX,
+                'AWAY_TO_AGAINST_MIN': AWAY_TO_AGAINST_MIN,
+                'AWAY_PENALTIES_MEAN': AWAY_PENALTIES_MEAN, 
+                'AWAY_PENALTIES_STD': AWAY_PENALTIES_STD,
+                'AWAY_PENALTIES_MAX': AWAY_PENALTIES_MAX,
+                'AWAY_PENALTIES_MIN': AWAY_PENALTIES_MIN,
+                'AWAY_PENALTY_YARDS_MEAN': AWAY_PENALTY_YARDS_MEAN, 
+                'AWAY_PENALTY_YARDS_STD': AWAY_PENALTY_YARDS_STD,
+                'AWAY_PENALTY_YARDS_MAX': AWAY_PENALTY_YARDS_MAX,
+                'AWAY_PENALTY_YARDS_MIN': AWAY_PENALTY_YARDS_MIN,
+                'AWAY_3RD_DOWN_MEAN': AWAY_3RD_DOWN_MEAN, 
+                'AWAY_3RD_DOWN_STD': AWAY_3RD_DOWN_STD,
+                'AWAY_3RD_DOWN_MAX': AWAY_3RD_DOWN_MAX,
+                'AWAY_3RD_DOWN_MIN': AWAY_3RD_DOWN_MIN,
+                'AWAY_3RD_DOWN_ATT_MEAN': AWAY_3RD_DOWN_ATT_MEAN, 
+                'AWAY_3RD_DOWN_ATT_STD': AWAY_3RD_DOWN_ATT_STD,
+                'AWAY_3RD_DOWN_ATT_MAX': AWAY_3RD_DOWN_ATT_MAX,
+                'AWAY_3RD_DOWN_ATT_MIN': AWAY_3RD_DOWN_ATT_MIN,
+                'AWAY_3RD_DOWN_CONV_MEAN': AWAY_3RD_DOWN_CONV_MEAN, 
+                'AWAY_3RD_DOWN_CONV_STD': AWAY_3RD_DOWN_CONV_STD,
+                'AWAY_3RD_DOWN_CONV_MAX': AWAY_3RD_DOWN_CONV_MAX,
+                'AWAY_3RD_DOWN_CONV_MIN': AWAY_3RD_DOWN_CONV_MIN,
+                'AWAY_3RD_DOWN_AGAINST_MEAN': AWAY_3RD_DOWN_AGAINST_MEAN,
+                'AWAY_3RD_DOWN_AGAINST_STD': AWAY_3RD_DOWN_AGAINST_STD,
+                'AWAY_3RD_DOWN_AGAINST_MAX': AWAY_3RD_DOWN_AGAINST_MAX,
+                'AWAY_3RD_DOWN_AGAINST_MIN': AWAY_3RD_DOWN_AGAINST_MIN,
+                'AWAY_3RD_DOWN_ATT_AGAINST_MEAN': AWAY_3RD_DOWN_ATT_AGAINST_MEAN,
+                'AWAY_3RD_DOWN_ATT_AGAINST_STD': AWAY_3RD_DOWN_ATT_AGAINST_STD,
+                'AWAY_3RD_DOWN_ATT_AGAINST_MAX': AWAY_3RD_DOWN_ATT_AGAINST_MAX,
+                'AWAY_3RD_DOWN_ATT_AGAINST_MIN': AWAY_3RD_DOWN_ATT_AGAINST_MIN,
+                'AWAY_3RD_DOWN_CONV_AGAINST_MEAN': AWAY_3RD_DOWN_CONV_AGAINST_MEAN,
+                'AWAY_3RD_DOWN_CONV_AGAINST_STD': AWAY_3RD_DOWN_CONV_AGAINST_STD,
+                'AWAY_3RD_DOWN_CONV_AGAINST_MAX': AWAY_3RD_DOWN_CONV_AGAINST_MAX,
+                'AWAY_3RD_DOWN_CONV_AGAINST_MIN': AWAY_3RD_DOWN_CONV_AGAINST_MIN,
+                'AWAY_TOP_MEAN': AWAY_TOP_MEAN, 
+                'AWAY_TOP_STD': AWAY_TOP_STD,
+                'AWAY_TOP_MAX': AWAY_TOP_MAX,
+                'AWAY_TOP_MIN': AWAY_TOP_MIN,
                 'AWAY_PASS_COMP_MEAN': 0, 
                 'AWAY_PASS_COMP_STD': 0,
                 'AWAY_PASS_COMP_MAX': 0,
@@ -1116,10 +1336,11 @@ for year in years:
                 'HOME_RUSH_ATTBR_MAX': 0,
                 'HOME_RUSH_ATTBR_MIN': 0,
                 'Home-Team-Win': home_team_win,
+                'DIV_MATCH': 0,
                 'SCORE': int(AWAY_SCORE)+int(HOME_SCORE),
-                'OU': OU,
+                'OU': float(OU),
                 'OU_COVER': OU_COVER,
-                'SPREAD': SPREAD,
+                'SPREAD': abs(float(SPREAD)),
                 'SPREAD_COVER': SPREAD_COVER,
                 'WIND_SPEED': WIND_SPEED,
                 'TEMP': TEMP,
