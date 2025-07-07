@@ -38,6 +38,7 @@ teams_con = sqlite3.connect("../../Data/v2/teams.sqlite")
 teams_cursor = teams_con.cursor()
 passers_con = sqlite3.connect("../../Data/v2/passers.sqlite")
 player_snaps_con = sqlite3.connect("../../Data/v2/player_snaps.sqlite")
+player_snaps_cursor = player_snaps_con.cursor()
 
 for year in years:
     season_data = []
@@ -673,7 +674,12 @@ for year in years:
                         df = df[df['Player'] != 'Player']
                         df['WEEK'] = week
                         df['YEAR'] = year
-                        df['BIG_GAME_WIN'] = -1 # use as a default value: -1 means this was not a 'big game'
+                        df['BIG_GAME_W'] = 0 # use as a default value: -1 means this was not a 'big game'
+                        df['BIG_GAME_L'] = 0
+                        df['PLAYOFF_W'] = 0
+                        df['PLAYOFF_L'] = 0
+                        df['CHAMP_W'] = 0
+                        df['CHAMP_L'] = 0
 
                         visiting_passer = df.loc[df['Tm'] == vis].iloc[0]
                         home_passer = df.loc[df['Tm'] == home].iloc[0]
@@ -681,11 +687,47 @@ for year in years:
                         SPREAD_ABS = abs(float(SPREAD))
                         if SPREAD_ABS <= 3.0:
                             if home_team_win > 0:
-                                home_passer['BIG_GAME_WIN'] = 1.0
-                                visiting_passer['BIG_GAME_WIN'] = 0.0
+                                home_passer['BIG_GAME_W'] = 1.0
+                                visiting_passer['BIG_GAME_L'] = 1.0
                             else:
-                                visiting_passer['BIG_GAME_WIN'] = 1.0
-                                home_passer['BIG_GAME_WIN'] = 0.0
+                                visiting_passer['BIG_GAME_W'] = 1.0
+                                home_passer['BIG_GAME_L'] = 1.0
+
+                        if year < 2021:
+                            # account for extra game
+                            if week > 17:
+                                if home_team_win > 0:
+                                    home_passer['PLAYOFF_W'] = 1.0
+                                    visiting_passer['PLAYOFF_L'] = 1.0
+                                else:
+                                    visiting_passer['PLAYOFF_W'] = 1.0
+                                    home_passer['PLAYOFF_L'] = 1.0
+
+                            if week == 21:
+                                if home_team_win > 0:
+                                    home_passer['CHAMP_W'] = 1.0
+                                    visiting_passer['CHAMP_L'] = 1.0
+                                else:
+                                    visiting_passer['CHAMP_W'] = 1.0
+                                    home_passer['CHAMP_L'] = 1.0
+
+                        else:
+                            if week > 18:
+                                if home_team_win > 0:
+                                    home_passer['PLAYOFF_W'] = 1.0
+                                    visiting_passer['PLAYOFF_L'] = 1.0
+                                else:
+                                    visiting_passer['PLAYOFF_W'] = 1.0
+                                    home_passer['PLAYOFF_L'] = 1.0
+
+                            
+                            if week == 22:
+                                if home_team_win > 0:
+                                    home_passer['CHAMP_W'] = 1.0
+                                    visiting_passer['CHAMP_L'] = 1.0
+                                else:
+                                    visiting_passer['CHAMP_W'] = 1.0
+                                    home_passer['CHAMP_L'] = 1.0
 
 
                         passers_frame = pd.DataFrame([visiting_passer.to_dict(), home_passer.to_dict()])
@@ -697,10 +739,6 @@ for year in years:
                         passers_frame['Bad%'] = passers_frame['Bad%'].str.replace('%', '', regex=False).astype(float) / 100
                         
                         print(passers_frame)
-                        exit(0)
-                        
-
-                        # df = df[df['Att'] > 2]
 
                         # If season passing table is empty, we want to pass -1 into each variable for the game stats
                         table = pd.read_sql(f"SELECT name FROM sqlite_master WHERE type='table' AND name=\"passers_{year}\"", passers_con)
@@ -799,49 +837,6 @@ for year in years:
                     #######################################################
 
                     #########################################################
-                    #####   BEGIN COLLECTING DATA FOR RUSHER TABLES     #####
-                    #########################################################
-                    if "rushing_advanced" in x:
-                        comment_soup =  BeautifulSoup(x, 'html.parser')
-                        table = comment_soup.find('table', id="rushing_advanced")
-                        adv_rushing_table = comment_soup.find('table', id="rushing_advanced")
-
-                        df = pd.read_html(str(adv_rushing_table))[0]
-                        df.fillna(0.0, inplace=True)
-
-                        df = df[df['Player'] != 'Player']
-
-                        visiting_rushers = pd.DataFrame(df.loc[df['Tm'] == vis])
-                        home_rushers = pd.DataFrame(df.loc[df['Tm'] == home])
-
-                        AWAY_RUSH_ATT = visiting_rushers['Att'].apply(pd.to_numeric).sum()
-                        AWAY_RUSH_YDS = visiting_rushers['Yds'].apply(pd.to_numeric).sum()
-                        AWAY_RUSH_TD = visiting_rushers['TD'].apply(pd.to_numeric).sum()
-                        AWAY_RUSH_1D = visiting_rushers['1D'].apply(pd.to_numeric).sum()
-                        AWAY_RUSH_YBC = visiting_rushers['YBC'].apply(pd.to_numeric).sum()
-                        AWAY_RUSH_YBCATT = visiting_rushers['YBC/Att'].apply(pd.to_numeric).mean()
-                        AWAY_RUSH_YAC = visiting_rushers['YAC'].apply(pd.to_numeric).sum()
-                        AWAY_RUSH_YACATT = visiting_rushers['YAC/Att'].apply(pd.to_numeric).mean()
-                        AWAY_RUSH_BRKTKL = visiting_rushers['BrkTkl'].apply(pd.to_numeric).sum()
-                        AWAY_RUSH_ATTBR = visiting_rushers['Att/Br'].apply(pd.to_numeric).mean()
-                        HOME_RUSH_ATT = home_rushers['Att'].apply(pd.to_numeric).sum()
-                        HOME_RUSH_YDS = home_rushers['Yds'].apply(pd.to_numeric).sum()
-                        HOME_RUSH_TD = home_rushers['TD'].apply(pd.to_numeric).sum()
-                        HOME_RUSH_1D = home_rushers['1D'].apply(pd.to_numeric).sum()
-                        HOME_RUSH_YBC = home_rushers['YBC'].apply(pd.to_numeric).sum()
-                        HOME_RUSH_YBCATT = home_rushers['YBC/Att'].apply(pd.to_numeric).mean()
-                        HOME_RUSH_YAC = home_rushers['YAC'].apply(pd.to_numeric).sum()
-                        HOME_RUSH_YACATT = home_rushers['YAC/Att'].apply(pd.to_numeric).mean()
-                        HOME_RUSH_BRKTKL = home_rushers['BrkTkl'].apply(pd.to_numeric).sum()
-                        HOME_RUSH_ATTBR = home_rushers['Att/Br'].apply(pd.to_numeric).mean()
-
-                        # TODO: calculate the necessities of these stats like with advanced passing. Career stats are probably not necessary
-
-                    #######################################################
-                    #####   END COLLECTING DATA FOR RUSHER TABLES     #####
-                    #######################################################
-
-                    #########################################################
                     #####   BEGIN COLLECTING DATA FOR SNAPS TABLES      #####
                     #########################################################
                     if "home_starters" in x:
@@ -853,9 +848,30 @@ for year in years:
                         df['Team'] = home
                         df['Week'] = week
 
-                        df.to_sql(f"starters_{year}", player_snaps_con, if_exists="replace")
-                        print("\n")
-                        print(df)
+                        table = pd.read_sql(f"SELECT name FROM sqlite_master WHERE type='table' AND name=\"starters_{year}\"", player_snaps_con)
+                        if table.empty:
+                            HOME_UNIQ_STARTERS_OL = -1
+                            HOME_UNIQ_STARTERS_DEFENSE = -1
+                            HOME_UNIQ_STARTERS_SKILL = -1
+                            HOME_UNIQ_STARTERS_QB = -1
+                        else:
+                            home_uniq_starters_ol_query = f"SELECT COUNT(*) AS ol_count FROM starters_{year} where Pos in ('OL','LT','LG','C','RG','RT','OT','OG') and Team = {home} group by Team;"
+                            count_df = pd.read_sql_query(home_uniq_starters_ol_query, player_snaps_con)
+                            HOME_UNIQ_STARTERS_OL = count_df['ol_count'].iloc[0]
+
+                            home_uniq_starters_def_query = f"SELECT COUNT(*) AS def_count FROM starters_{year} where Pos in ('DE','DT','NT','DL','EDGE','ILB','OLB','LB','S','SS','FS','CB','DB','RCB','LCB') and Team = {home} group by Team;"
+                            count_df = pd.read_sql_query(home_uniq_starters_def_query, player_snaps_con)
+                            HOME_UNIQ_STARTERS_DEFENSE = count_df['def_count'].iloc[0]
+
+                            home_uniq_starters_skill_query = f"SELECT COUNT(*) AS skill_count FROM starters_{year} where Pos in ('WR','TE','RB') and Team = {home} group by Team;"
+                            count_df = pd.read_sql_query(home_uniq_starters_skill_query, player_snaps_con)
+                            HOME_UNIQ_STARTERS_SKILL = count_df['skill_count'].iloc[0]
+
+                            home_uniq_starters_qb_query = f"SELECT COUNT(*) AS qb_count FROM starters_{year} where Pos in ('QB') and Team = {home} group by Team;"
+                            count_df = pd.read_sql_query(home_uniq_starters_qb_query, player_snaps_con)
+                            HOME_UNIQ_STARTERS_QB = count_df['qb_count'].iloc[0]
+
+                        df.to_sql(f"starters_{year}", player_snaps_con, if_exists="append")
 
                     if "away_starters" in x:
                         comment_soup =  BeautifulSoup(x, 'html.parser')
@@ -866,10 +882,31 @@ for year in years:
                         df['Team'] = vis
                         df['Week'] = week
 
-                        df.to_sql(f"starters_{year}", player_snaps_con, if_exists="replace")
-                        print("\n")
-                        print(df)
-                        exit(0)
+                        table = pd.read_sql(f"SELECT name FROM sqlite_master WHERE type='table' AND name=\"starters_{year}\"", player_snaps_con)
+                        if table.empty:
+                            AWAY_UNIQ_STARTERS_OL = -1
+                            AWAY_UNIQ_STARTERS_DEFENSE = -1
+                            AWAY_UNIQ_STARTERS_SKILL = -1
+                            AWAY_UNIQ_STARTERS_QB = -1
+                        else:
+                            away_uniq_starters_ol_query = f"SELECT COUNT(*) AS ol_count FROM starters_{year} where Pos in ('OL','LT','LG','C','RG','RT','OT','OG') and Team = {vis} group by Team;"
+                            count_df = pd.read_sql_query(away_uniq_starters_ol_query, player_snaps_con)
+                            AWAY_UNIQ_STARTERS_OL = count_df['ol_count'].iloc[0]
+
+                            away_uniq_starters_def_query = f"SELECT COUNT(*) AS def_count FROM starters_{year} where Pos in ('DE','DT','NT','DL','EDGE','ILB','OLB','LB','S','SS','FS','CB','DB','RCB','LCB') and Team = {vis} group by Team;"
+                            count_df = pd.read_sql_query(away_uniq_starters_def_query, player_snaps_con)
+                            AWAY_UNIQ_STARTERS_DEFENSE = count_df['def_count'].iloc[0]
+
+                            away_uniq_starters_skill_query = f"SELECT COUNT(*) AS skill_count FROM starters_{year} where Pos in ('WR','TE','RB') and Team = {vis} group by Team;"
+                            count_df = pd.read_sql_query(away_uniq_starters_skill_query, player_snaps_con)
+                            AWAY_UNIQ_STARTERS_SKILL = count_df['skill_count'].iloc[0]
+
+                            away_uniq_starters_qb_query = f"SELECT COUNT(*) AS qb_count FROM starters_{year} where Pos in ('QB') and Team = {vis} group by Team;"
+                            count_df = pd.read_sql_query(away_uniq_starters_qb_query, player_snaps_con)
+                            AWAY_UNIQ_STARTERS_QB = count_df['qb_count'].iloc[0]
+
+                        df.to_sql(f"starters_{year}", player_snaps_con, if_exists="append")
+
                     #######################################################
                     #####   END COLLECTING DATA FOR SNAPS TABLES      #####
                     #######################################################
@@ -880,19 +917,21 @@ for year in years:
 
             season_data.append({
                 'SEASON': year,
-                'WEEK': week,
                 'AWAY_TEAM_NAME': vis,
                 'HOME_TEAM_NAME': home,
                 'AWAY_SCORE': AWAY_SCORE,
                 'HOME_SCORE': HOME_SCORE,
+                'WEEK': week,
                 'AWAY_SOS': AWAY_SOS, # NEED TO GET AVERAGE SOS ENTERING GAME
                 'HOME_SOS': HOME_SOS,
-                'AWAY_UNIQ_STARTERS_DEFENSE': 0,
-                'AWAY_UNIQ_STARTERS_OL':0,
-                'AWAY_UNIQ_STARTERS_WR':0,
-                'HOME_UNIQ_STARTERS_DEFENSE': 0,
-                'HOME_UNIQ_STARTERS_OL':0,
-                'HOME_UNIQ_STARTERS_WR':0,
+                'AWAY_UNIQ_STARTERS_QB': AWAY_UNIQ_STARTERS_QB,
+                'AWAY_UNIQ_STARTERS_DEFENSE': AWAY_UNIQ_STARTERS_DEFENSE,
+                'AWAY_UNIQ_STARTERS_OL': AWAY_UNIQ_STARTERS_OL,
+                'AWAY_UNIQ_STARTERS_SKILL': AWAY_UNIQ_STARTERS_SKILL,
+                'HOME_UNIQ_STARTERS_QB': HOME_UNIQ_STARTERS_QB,
+                'HOME_UNIQ_STARTERS_DEFENSE': HOME_UNIQ_STARTERS_DEFENSE,
+                'HOME_UNIQ_STARTERS_OL': HOME_UNIQ_STARTERS_OL,
+                'HOME_UNIQ_STARTERS_SKILL': HOME_UNIQ_STARTERS_SKILL,
                 # 'AWAY_DEFENSE_YRS_EXP': 0,
                 # 'AWAY_OL_YRS_EXP': 0,
                 # 'AWAY_WR_YRS_EXP': 0,
@@ -1077,46 +1116,6 @@ for year in years:
                 'AWAY_PASS_PLAYOFF_L': 0,
                 'AWAY_PASS_CHAMP_W': 0,
                 'AWAY_PASS_CHAMP_L': 0,
-                'AWAY_RUSH_ATT_MEAN': 0, 
-                'AWAY_RUSH_ATT_STD': 0,
-                'AWAY_RUSH_ATT_MAX': 0,
-                'AWAY_RUSH_ATT_MIN': 0,
-                'AWAY_RUSH_YDS_MEAN': 0, 
-                'AWAY_RUSH_YDS_STD': 0,
-                'AWAY_RUSH_YDS_MAX': 0,
-                'AWAY_RUSH_YDS_MIN': 0,
-                'AWAY_RUSH_TD_MEAN': 0, 
-                'AWAY_RUSH_TD_STD': 0,
-                'AWAY_RUSH_TD_MAX': 0,
-                'AWAY_RUSH_TD_MIN': 0,
-                'AWAY_RUSH_1D_MEAN': 0, 
-                'AWAY_RUSH_1D_STD': 0,
-                'AWAY_RUSH_1D_MAX': 0,
-                'AWAY_RUSH_1D_MIN': 0,
-                'AWAY_RUSH_YBC_MEAN': 0, 
-                'AWAY_RUSH_YBC_STD': 0,
-                'AWAY_RUSH_YBC_MAX': 0,
-                'AWAY_RUSH_YBC_MIN': 0,
-                'AWAY_RUSH_YBCATT_MEAN': 0, 
-                'AWAY_RUSH_YBCATT_STD': 0,
-                'AWAY_RUSH_YBCATT_MAX': 0,
-                'AWAY_RUSH_YBCATT_MIN': 0,
-                'AWAY_RUSH_YAC_MEAN': 0, 
-                'AWAY_RUSH_YAC_STD': 0,
-                'AWAY_RUSH_YAC_MAX': 0,
-                'AWAY_RUSH_YAC_MIN': 0,
-                'AWAY_RUSH_YACATT_MEAN': 0, 
-                'AWAY_RUSH_YACATT_STD': 0,
-                'AWAY_RUSH_YACATT_MAX': 0,
-                'AWAY_RUSH_YACATT_MIN': 0,
-                'AWAY_RUSH_BRKTKL_MEAN': 0, 
-                'AWAY_RUSH_BRKTKL_STD': 0,
-                'AWAY_RUSH_BRKTKL_MAX': 0,
-                'AWAY_RUSH_BRKTKL_MIN': 0,
-                'AWAY_RUSH_ATTBR_MEAN': 0, 
-                'AWAY_RUSH_ATTBR_STD': 0,
-                'AWAY_RUSH_ATTBR_MAX': 0,
-                'AWAY_RUSH_ATTBR_MIN': 0,
                 'HOME_FD_MEAN': 0, 
                 'HOME_FD_STD': 0,
                 'HOME_FD_MAX': 0,
@@ -1295,46 +1294,6 @@ for year in years:
                 'HOME_PASS_PLAYOFF_L': 0,
                 'HOME_PASS_CHAMP_W': 0,
                 'HOME_PASS_CHAMP_L': 0,
-                'HOME_RUSH_ATT_MEAN': 0, 
-                'HOME_RUSH_ATT_STD': 0,
-                'HOME_RUSH_ATT_MAX': 0,
-                'HOME_RUSH_ATT_MIN': 0,
-                'HOME_RUSH_YDS_MEAN': 0, 
-                'HOME_RUSH_YDS_STD': 0,
-                'HOME_RUSH_YDS_MAX': 0,
-                'HOME_RUSH_YDS_MIN': 0,
-                'HOME_RUSH_TD_MEAN': 0, 
-                'HOME_RUSH_TD_STD': 0,
-                'HOME_RUSH_TD_MAX': 0,
-                'HOME_RUSH_TD_MIN': 0,
-                'HOME_RUSH_1D_MEAN': 0, 
-                'HOME_RUSH_1D_STD': 0,
-                'HOME_RUSH_1D_MAX': 0,
-                'HOME_RUSH_1D_MIN': 0,
-                'HOME_RUSH_YBC_MEAN': 0, 
-                'HOME_RUSH_YBC_STD': 0,
-                'HOME_RUSH_YBC_MAX': 0,
-                'HOME_RUSH_YBC_MIN': 0,
-                'HOME_RUSH_YBCATT_MEAN': 0, 
-                'HOME_RUSH_YBCATT_STD': 0,
-                'HOME_RUSH_YBCATT_MAX': 0,
-                'HOME_RUSH_YBCATT_MIN': 0,
-                'HOME_RUSH_YAC_MEAN': 0, 
-                'HOME_RUSH_YAC_STD': 0,
-                'HOME_RUSH_YAC_MAX': 0,
-                'HOME_RUSH_YAC_MIN': 0,
-                'HOME_RUSH_YACATT_MEAN': 0, 
-                'HOME_RUSH_YACATT_STD': 0,
-                'HOME_RUSH_YACATT_MAX': 0,
-                'HOME_RUSH_YACATT_MIN': 0,
-                'HOME_RUSH_BRKTKL_MEAN': 0, 
-                'HOME_RUSH_BRKTKL_STD': 0,
-                'HOME_RUSH_BRKTKL_MAX': 0,
-                'HOME_RUSH_BRKTKL_MIN': 0,
-                'HOME_RUSH_ATTBR_MEAN': 0, 
-                'HOME_RUSH_ATTBR_STD': 0,
-                'HOME_RUSH_ATTBR_MAX': 0,
-                'HOME_RUSH_ATTBR_MIN': 0,
                 'Home-Team-Win': home_team_win,
                 'DIV_MATCH': 0,
                 'SCORE': int(AWAY_SCORE)+int(HOME_SCORE),
