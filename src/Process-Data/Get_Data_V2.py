@@ -28,10 +28,13 @@ from tqdm import tqdm
 
 sys.path.insert(1, os.path.join(sys.path[0], '../..'))
 from src.Utils.table_headers import game_table_headers, team_table_headers
+from src.Utils.get_div_match import get_div_match
+from src.Utils.get_prev_year_rank import get_prev_year_rank
 
-years = [2018,2019,2020,2021,2022,2023,2024]
+# years = [2018,2019,2020,2021,2022,2023,2024]
+years = [2018]
 # RANKS THROUGH 18 WEEKS; 18th is WC round until 2021
-weeks = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]
+# weeks = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22]
 
 games_con = sqlite3.connect("../../Data/v2/games.sqlite")
 teams_con = sqlite3.connect("../../Data/v2/teams.sqlite")
@@ -42,6 +45,10 @@ player_snaps_cursor = player_snaps_con.cursor()
 
 for year in years:
     season_data = []
+    if year > 2020:
+        weeks = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22]
+    else:
+        weeks = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21]
     for week in weeks:
         vis_team_data = []
         vis_passer_data = []
@@ -747,90 +754,719 @@ for year in years:
                             AWAY_PASS_COMP_STD = -1
                             AWAY_PASS_COMP_MAX = -1
                             AWAY_PASS_COMP_MIN = -1
-                            # TODO ... ... ...
+                            AWAY_PASS_ATT_MEAN = -1 
+                            AWAY_PASS_ATT_STD = -1
+                            AWAY_PASS_ATT_MAX = -1
+                            AWAY_PASS_ATT_MIN = -1
+                            AWAY_PASS_YDS_MEAN = -1 
+                            AWAY_PASS_YDS_STD = -1
+                            AWAY_PASS_YDS_MAX = -1
+                            AWAY_PASS_YDS_MIN = -1
+                            AWAY_PASS_1D_MEAN = -1 
+                            AWAY_PASS_1D_STD = -1
+                            AWAY_PASS_1D_MAX = -1
+                            AWAY_PASS_1D_MIN = -1
+                            AWAY_PASS_1DPCT_MEAN = -1 
+                            AWAY_PASS_1DPCT_STD = -1
+                            AWAY_PASS_1DPCT_MAX = -1
+                            AWAY_PASS_1DPCT_MIN = -1
+                            AWAY_PASS_IAY_MEAN = -1 
+                            AWAY_PASS_IAY_STD = -1
+                            AWAY_PASS_IAY_MAX = -1
+                            AWAY_PASS_IAY_MIN = -1
+                            AWAY_PASS_IAYPA_MEAN = -1 
+                            AWAY_PASS_IAYPA_STD = -1
+                            AWAY_PASS_IAYPA_MAX = -1
+                            AWAY_PASS_IAYPA_MIN = -1
+                            AWAY_PASS_CAY_MEAN = -1 
+                            AWAY_PASS_CAY_STD = -1
+                            AWAY_PASS_CAY_MAX = -1
+                            AWAY_PASS_CAY_MIN = -1
+                            AWAY_PASS_CAYCMP_MEAN = -1 
+                            AWAY_PASS_CAYCMP_STD = -1
+                            AWAY_PASS_CAYCMP_MAX = -1
+                            AWAY_PASS_CAYCMP_MIN = -1
+                            AWAY_PASS_CAYPA_MEAN = -1 
+                            AWAY_PASS_CAYPA_STD = -1
+                            AWAY_PASS_CAYPA_MAX = -1
+                            AWAY_PASS_CAYPA_MIN = -1
+                            AWAY_PASS_YAC_MEAN = -1 
+                            AWAY_PASS_YAC_STD = -1
+                            AWAY_PASS_YAC_MAX = -1
+                            AWAY_PASS_YAC_MIN = -1
+                            AWAY_PASS_YACCMP_MEAN = -1 
+                            AWAY_PASS_YACCMP_STD = -1
+                            AWAY_PASS_YACCMP_MAX = -1
+                            AWAY_PASS_YACCMP_MIN = -1
+                            AWAY_PASS_DROPS_MEAN = -1 
+                            AWAY_PASS_DROPS_STD = -1
+                            AWAY_PASS_DROPS_MAX = -1
+                            AWAY_PASS_DROPS_MIN = -1
+                            AWAY_PASS_DROPPCT_MEAN = -1 
+                            AWAY_PASS_DROPPCT_STD = -1
+                            AWAY_PASS_DROPPCT_MAX = -1
+                            AWAY_PASS_DROPPCT_MIN = -1
+                            AWAY_PASS_BADTH_MEAN = -1 
+                            AWAY_PASS_BADTH_STD = -1
+                            AWAY_PASS_BADTH_MAX = -1
+                            AWAY_PASS_BADTH_MIN = -1
+                            AWAY_PASS_SK_MEAN = -1 
+                            AWAY_PASS_SK_STD = -1
+                            AWAY_PASS_SK_MAX = -1
+                            AWAY_PASS_SK_MIN = -1
+                            AWAY_PASS_BLITZ_MEAN = -1 
+                            AWAY_PASS_BLITZ_STD = -1
+                            AWAY_PASS_BLITZ_MAX = -1
+                            AWAY_PASS_BLITZ_MIN = -1
+                            AWAY_PASS_HRRY_MEAN = -1 
+                            AWAY_PASS_HRRY_STD = -1
+                            AWAY_PASS_HRRY_MAX = -1
+                            AWAY_PASS_HRRY_MIN = -1
+                            AWAY_PASS_HITS_MEAN = -1 
+                            AWAY_PASS_HITS_STD = -1
+                            AWAY_PASS_HITS_MAX = -1
+                            AWAY_PASS_HITS_MIN = -1
+                            AWAY_PASS_PRSS_MEAN = -1 
+                            AWAY_PASS_PRSS_STD = -1
+                            AWAY_PASS_PRSS_MAX = -1
+                            AWAY_PASS_PRSS_MIN = -1
+                            AWAY_PASS_PRSSPCT_MEAN = -1 
+                            AWAY_PASS_PRSSPCT_STD = -1
+                            AWAY_PASS_PRSSPCT_MAX = -1
+                            AWAY_PASS_PRSSPCT_MIN = -1
+                            AWAY_PASS_SCRM_MEAN = -1 
+                            AWAY_PASS_SCRM_STD = -1
+                            AWAY_PASS_SCRM_MAX = -1
+                            AWAY_PASS_SCRM_MIN = -1
+                            AWAY_PASS_YDSSCRM_MEAN = -1 
+                            AWAY_PASS_YDSSCRM_STD = -1
+                            AWAY_PASS_YDSSCRM_MAX = -1
+                            AWAY_PASS_YDSSCRM_MIN = -1
+                            HOME_PASS_ATT_MEAN = -1 
+                            HOME_PASS_ATT_STD = -1
+                            HOME_PASS_ATT_MAX = -1
+                            HOME_PASS_ATT_MIN = -1
+                            HOME_PASS_YDS_MEAN = -1 
+                            HOME_PASS_YDS_STD = -1
+                            HOME_PASS_YDS_MAX = -1
+                            HOME_PASS_YDS_MIN = -1
+                            HOME_PASS_1D_MEAN = -1 
+                            HOME_PASS_1D_STD = -1
+                            HOME_PASS_1D_MAX = -1
+                            HOME_PASS_1D_MIN = -1
+                            HOME_PASS_1DPCT_MEAN = -1 
+                            HOME_PASS_1DPCT_STD = -1
+                            HOME_PASS_1DPCT_MAX = -1
+                            HOME_PASS_1DPCT_MIN = -1
+                            HOME_PASS_IAY_MEAN = -1 
+                            HOME_PASS_IAY_STD = -1
+                            HOME_PASS_IAY_MAX = -1
+                            HOME_PASS_IAY_MIN = -1
+                            HOME_PASS_IAYPA_MEAN = -1 
+                            HOME_PASS_IAYPA_STD = -1
+                            HOME_PASS_IAYPA_MAX = -1
+                            HOME_PASS_IAYPA_MIN = -1
+                            HOME_PASS_CAY_MEAN = -1 
+                            HOME_PASS_CAY_STD = -1
+                            HOME_PASS_CAY_MAX = -1
+                            HOME_PASS_CAY_MIN = -1
+                            HOME_PASS_CAYCMP_MEAN = -1 
+                            HOME_PASS_CAYCMP_STD = -1
+                            HOME_PASS_CAYCMP_MAX = -1
+                            HOME_PASS_CAYCMP_MIN = -1
+                            HOME_PASS_CAYPA_MEAN = -1 
+                            HOME_PASS_CAYPA_STD = -1
+                            HOME_PASS_CAYPA_MAX = -1
+                            HOME_PASS_CAYPA_MIN = -1
+                            HOME_PASS_YAC_MEAN = -1 
+                            HOME_PASS_YAC_STD = -1
+                            HOME_PASS_YAC_MAX = -1
+                            HOME_PASS_YAC_MIN = -1
+                            HOME_PASS_YACCMP_MEAN = -1 
+                            HOME_PASS_YACCMP_STD = -1
+                            HOME_PASS_YACCMP_MAX = -1
+                            HOME_PASS_YACCMP_MIN = -1
+                            HOME_PASS_DROPS_MEAN = -1 
+                            HOME_PASS_DROPS_STD = -1
+                            HOME_PASS_DROPS_MAX = -1
+                            HOME_PASS_DROPS_MIN = -1
+                            HOME_PASS_DROPPCT_MEAN = -1 
+                            HOME_PASS_DROPPCT_STD = -1
+                            HOME_PASS_DROPPCT_MAX = -1
+                            HOME_PASS_DROPPCT_MIN = -1
+                            HOME_PASS_BADTH_MEAN = -1 
+                            HOME_PASS_BADTH_STD = -1
+                            HOME_PASS_BADTH_MAX = -1
+                            HOME_PASS_BADTH_MIN = -1
+                            HOME_PASS_SK_MEAN = -1 
+                            HOME_PASS_SK_STD = -1
+                            HOME_PASS_SK_MAX = -1
+                            HOME_PASS_SK_MIN = -1
+                            HOME_PASS_BLITZ_MEAN = -1 
+                            HOME_PASS_BLITZ_STD = -1
+                            HOME_PASS_BLITZ_MAX = -1
+                            HOME_PASS_BLITZ_MIN = -1
+                            HOME_PASS_HRRY_MEAN = -1 
+                            HOME_PASS_HRRY_STD = -1
+                            HOME_PASS_HRRY_MAX = -1
+                            HOME_PASS_HRRY_MIN = -1
+                            HOME_PASS_HITS_MEAN = -1 
+                            HOME_PASS_HITS_STD = -1
+                            HOME_PASS_HITS_MAX = -1
+                            HOME_PASS_HITS_MIN = -1
+                            HOME_PASS_PRSS_MEAN = -1 
+                            HOME_PASS_PRSS_STD = -1
+                            HOME_PASS_PRSS_MAX = -1
+                            HOME_PASS_PRSS_MIN = -1
+                            HOME_PASS_PRSSPCT_MEAN = -1 
+                            HOME_PASS_PRSSPCT_STD = -1
+                            HOME_PASS_PRSSPCT_MAX = -1
+                            HOME_PASS_PRSSPCT_MIN = -1
+                            HOME_PASS_SCRM_MEAN = -1 
+                            HOME_PASS_SCRM_STD = -1
+                            HOME_PASS_SCRM_MAX = -1
+                            HOME_PASS_SCRM_MIN = -1
+                            HOME_PASS_YDSSCRM_MEAN = -1 
+                            HOME_PASS_YDSSCRM_STD = -1
+                            HOME_PASS_YDSSCRM_MAX = -1
+                            HOME_PASS_YDSSCRM_MIN = -1
+                            # AWAY_PASS_BIG_GAME_W = -1
+                            # AWAY_PASS_BIG_GAME_L = -1
+                            # AWAY_PASS_PLAYOFF_W = -1
+                            # AWAY_PASS_PLAYOFF_L = -1
+                            # AWAY_PASS_CHAMP_W = -1
+                            # AWAY_PASS_CHAMP_L = -1
                         else:
                             # if the table is not empty, take the mean, std, max and min from each of the RELEVANT VALues
                             away_passer_df = pd.read_sql_query(f"SELECT * FROM passers_{year} WHERE (WEEK < {week}) and Player = {visiting_passer['Player']} order by WEEK desc;", passers_con)
                             home_passer_df = pd.read_sql_query(f"SELECT * FROM passers_{year} WHERE (WEEK < {week}) and Player = {home_passer['Player']} order by WEEK desc;", passers_con)
 
-                            AWAY_PASS_COMP_MEAN = away_passer_df['AWAY_PASS_COMP'].mean()
-                            AWAY_PASS_COMP_STD = away_passer_df['AWAY_PASS_COMP'].std()
-                            AWAY_PASS_COMP_MAX = away_passer_df['AWAY_PASS_COMP'].min()
-                            AWAY_PASS_COMP_MIN = away_passer_df['AWAY_PASS_COMP'].max()
-                            # TODO ... ... ...
+                            AWAY_PASS_COMP_MEAN = away_passer_df['Cmp'].mean()
+                            AWAY_PASS_COMP_STD = away_passer_df['Cmp'].std()
+                            AWAY_PASS_COMP_MAX = away_passer_df['Cmp'].max()
+                            AWAY_PASS_COMP_MIN = away_passer_df['Cmp'].min()
+                            AWAY_PASS_ATT_MEAN = away_passer_df['Att'].mean() 
+                            AWAY_PASS_ATT_STD = away_passer_df['Att'].std()
+                            AWAY_PASS_ATT_MAX = away_passer_df['Att'].max()
+                            AWAY_PASS_ATT_MIN = away_passer_df['Att'].min()
+                            AWAY_PASS_YDS_MEAN = away_passer_df['Yds'].mean() 
+                            AWAY_PASS_YDS_STD = away_passer_df['Yds'].std()
+                            AWAY_PASS_YDS_MAX = away_passer_df['Yds'].max()
+                            AWAY_PASS_YDS_MIN = away_passer_df['Yds'].min()
+                            AWAY_PASS_1D_MEAN = away_passer_df['1D'].mean() 
+                            AWAY_PASS_1D_STD = away_passer_df['1D'].std()
+                            AWAY_PASS_1D_MAX = away_passer_df['1D'].max()
+                            AWAY_PASS_1D_MIN = away_passer_df['1D'].min()
+                            AWAY_PASS_1DPCT_MEAN = away_passer_df['1D%'].mean() 
+                            AWAY_PASS_1DPCT_STD = away_passer_df['1D%'].std()
+                            AWAY_PASS_1DPCT_MAX = away_passer_df['1D%'].max()
+                            AWAY_PASS_1DPCT_MIN = away_passer_df['1D%'].min()
+                            AWAY_PASS_IAY_MEAN = away_passer_df['IAY'].mean() 
+                            AWAY_PASS_IAY_STD = away_passer_df['IAY'].std()
+                            AWAY_PASS_IAY_MAX = away_passer_df['IAY'].max()
+                            AWAY_PASS_IAY_MIN = away_passer_df['IAY'].min()
+                            AWAY_PASS_IAYPA_MEAN = away_passer_df['IAY/PA'].mean() 
+                            AWAY_PASS_IAYPA_STD = away_passer_df['IAY/PA'].std()
+                            AWAY_PASS_IAYPA_MAX = away_passer_df['IAY/PA'].max()
+                            AWAY_PASS_IAYPA_MIN = away_passer_df['IAY/PA'].min()
+                            AWAY_PASS_CAY_MEAN = away_passer_df['CAY'].mean() 
+                            AWAY_PASS_CAY_STD = away_passer_df['CAY'].std()
+                            AWAY_PASS_CAY_MAX = away_passer_df['CAY'].max()
+                            AWAY_PASS_CAY_MIN = away_passer_df['CAY'].min()
+                            AWAY_PASS_CAYCMP_MEAN = away_passer_df['CAY/Cmp'].mean() 
+                            AWAY_PASS_CAYCMP_STD = away_passer_df['CAY/Cmp'].std()
+                            AWAY_PASS_CAYCMP_MAX = away_passer_df['CAY/Cmp'].max()
+                            AWAY_PASS_CAYCMP_MIN = away_passer_df['CAY/Cmp'].min()
+                            AWAY_PASS_CAYPA_MEAN = away_passer_df['CAY/PA'].mean() 
+                            AWAY_PASS_CAYPA_STD = away_passer_df['CAY/PA'].std()
+                            AWAY_PASS_CAYPA_MAX = away_passer_df['CAY/PA'].max()
+                            AWAY_PASS_CAYPA_MIN = away_passer_df['CAY/PA'].min()
+                            AWAY_PASS_YAC_MEAN = away_passer_df['YAC'].mean() 
+                            AWAY_PASS_YAC_STD = away_passer_df['YAC'].std()
+                            AWAY_PASS_YAC_MAX = away_passer_df['YAC'].max()
+                            AWAY_PASS_YAC_MIN = away_passer_df['YAC'].min()
+                            AWAY_PASS_YACCMP_MEAN = away_passer_df['YAC/Cmp'].mean() 
+                            AWAY_PASS_YACCMP_STD = away_passer_df['YAC/Cmp'].std()
+                            AWAY_PASS_YACCMP_MAX = away_passer_df['YAC/Cmp'].max()
+                            AWAY_PASS_YACCMP_MIN = away_passer_df['YAC/Cmp'].min()
+                            AWAY_PASS_DROPS_MEAN = away_passer_df['Drops'].mean() 
+                            AWAY_PASS_DROPS_STD = away_passer_df['Drops'].std()
+                            AWAY_PASS_DROPS_MAX = away_passer_df['Drops'].max()
+                            AWAY_PASS_DROPS_MIN = away_passer_df['Drops'].min()
+                            AWAY_PASS_DROPPCT_MEAN = away_passer_df['Drop%'].mean() 
+                            AWAY_PASS_DROPPCT_STD = away_passer_df['Drop%'].std()
+                            AWAY_PASS_DROPPCT_MAX = away_passer_df['Drop%'].max()
+                            AWAY_PASS_DROPPCT_MIN = away_passer_df['Drop%'].min()
+                            AWAY_PASS_BADTH_MEAN = away_passer_df['BadTh'].mean() 
+                            AWAY_PASS_BADTH_STD = away_passer_df['BadTh'].std()
+                            AWAY_PASS_BADTH_MAX = away_passer_df['BadTh'].max()
+                            AWAY_PASS_BADTH_MIN = away_passer_df['BadTh'].min()
+                            AWAY_PASS_SK_MEAN = away_passer_df['Sk'].mean() 
+                            AWAY_PASS_SK_STD = away_passer_df['Sk'].std()
+                            AWAY_PASS_SK_MAX = away_passer_df['Sk'].max()
+                            AWAY_PASS_SK_MIN = away_passer_df['Sk'].min()
+                            AWAY_PASS_BLITZ_MEAN = away_passer_df['Bltz'].mean() 
+                            AWAY_PASS_BLITZ_STD = away_passer_df['Bltz'].std()
+                            AWAY_PASS_BLITZ_MAX = away_passer_df['Bltz'].max()
+                            AWAY_PASS_BLITZ_MIN = away_passer_df['Bltz'].min()
+                            AWAY_PASS_HRRY_MEAN = away_passer_df['Hrry'].mean() 
+                            AWAY_PASS_HRRY_STD = away_passer_df['Hrry'].std()
+                            AWAY_PASS_HRRY_MAX = away_passer_df['Hrry'].max()
+                            AWAY_PASS_HRRY_MIN = away_passer_df['Hrry'].min()
+                            AWAY_PASS_HITS_MEAN = away_passer_df['Hits'].mean() 
+                            AWAY_PASS_HITS_STD = away_passer_df['Hits'].std()
+                            AWAY_PASS_HITS_MAX = away_passer_df['Hits'].max()
+                            AWAY_PASS_HITS_MIN = away_passer_df['Hits'].min()
+                            AWAY_PASS_PRSS_MEAN = away_passer_df['Prss'].mean() 
+                            AWAY_PASS_PRSS_STD = away_passer_df['Prss'].std()
+                            AWAY_PASS_PRSS_MAX = away_passer_df['Prss'].max()
+                            AWAY_PASS_PRSS_MIN = away_passer_df['Prss'].min()
+                            AWAY_PASS_PRSSPCT_MEAN = away_passer_df['Prss%'].mean() 
+                            AWAY_PASS_PRSSPCT_STD = away_passer_df['Prss%'].std()
+                            AWAY_PASS_PRSSPCT_MAX = away_passer_df['Prss%'].max()
+                            AWAY_PASS_PRSSPCT_MIN = away_passer_df['Prss%'].min()
+                            AWAY_PASS_SCRM_MEAN = away_passer_df['Scrm'].mean() 
+                            AWAY_PASS_SCRM_STD = away_passer_df['Scrm'].std()
+                            AWAY_PASS_SCRM_MAX = away_passer_df['Scrm'].max()
+                            AWAY_PASS_SCRM_MIN = away_passer_df['Scrm'].min()
+                            AWAY_PASS_YDSSCRM_MEAN = away_passer_df['Yds/Scrm'].mean() 
+                            AWAY_PASS_YDSSCRM_STD = away_passer_df['Yds/Scrm'].std()
+                            AWAY_PASS_YDSSCRM_MAX = away_passer_df['Yds/Scrm'].max()
+                            AWAY_PASS_YDSSCRM_MIN = away_passer_df['Yds/Scrm'].min()
+                            HOME_PASS_COMP_MEAN = home_passer_df['Cmp'].mean()
+                            HOME_PASS_COMP_STD = home_passer_df['Cmp'].std()
+                            HOME_PASS_COMP_MAX = home_passer_df['Cmp'].min()
+                            HOME_PASS_COMP_MIN = home_passer_df['Cmp'].max()
+                            HOME_PASS_ATT_MEAN = home_passer_df['Att'].mean() 
+                            HOME_PASS_ATT_STD = home_passer_df['Att'].std()
+                            HOME_PASS_ATT_MAX = home_passer_df['Att'].max()
+                            HOME_PASS_ATT_MIN = home_passer_df['Att'].min()
+                            HOME_PASS_YDS_MEAN = home_passer_df['Yds'].mean() 
+                            HOME_PASS_YDS_STD = home_passer_df['Yds'].std()
+                            HOME_PASS_YDS_MAX = home_passer_df['Yds'].max()
+                            HOME_PASS_YDS_MIN = home_passer_df['Yds'].min()
+                            HOME_PASS_1D_MEAN = home_passer_df['1D'].mean() 
+                            HOME_PASS_1D_STD = home_passer_df['1D'].std()
+                            HOME_PASS_1D_MAX = home_passer_df['1D'].max()
+                            HOME_PASS_1D_MIN = home_passer_df['1D'].min()
+                            HOME_PASS_1DPCT_MEAN = home_passer_df['1D%'].mean() 
+                            HOME_PASS_1DPCT_STD = home_passer_df['1D%'].std()
+                            HOME_PASS_1DPCT_MAX = home_passer_df['1D%'].max()
+                            HOME_PASS_1DPCT_MIN = home_passer_df['1D%'].min()
+                            HOME_PASS_IAY_MEAN = home_passer_df['IAY'].mean() 
+                            HOME_PASS_IAY_STD = home_passer_df['IAY'].std()
+                            HOME_PASS_IAY_MAX = home_passer_df['IAY'].max()
+                            HOME_PASS_IAY_MIN = home_passer_df['IAY'].min()
+                            HOME_PASS_IAYPA_MEAN = home_passer_df['IAY/PA'].mean() 
+                            HOME_PASS_IAYPA_STD = home_passer_df['IAY/PA'].std()
+                            HOME_PASS_IAYPA_MAX = home_passer_df['IAY/PA'].max()
+                            HOME_PASS_IAYPA_MIN = home_passer_df['IAY/PA'].min()
+                            HOME_PASS_CAY_MEAN = home_passer_df['CAY'].mean() 
+                            HOME_PASS_CAY_STD = home_passer_df['CAY'].std()
+                            HOME_PASS_CAY_MAX = home_passer_df['CAY'].max()
+                            HOME_PASS_CAY_MIN = home_passer_df['CAY'].min()
+                            HOME_PASS_CAYCMP_MEAN = home_passer_df['CAY/Cmp'].mean() 
+                            HOME_PASS_CAYCMP_STD = home_passer_df['CAY/Cmp'].std()
+                            HOME_PASS_CAYCMP_MAX = home_passer_df['CAY/Cmp'].max()
+                            HOME_PASS_CAYCMP_MIN = home_passer_df['CAY/Cmp'].min()
+                            HOME_PASS_CAYPA_MEAN = home_passer_df['CAY/PA'].mean() 
+                            HOME_PASS_CAYPA_STD = home_passer_df['CAY/PA'].std()
+                            HOME_PASS_CAYPA_MAX = home_passer_df['CAY/PA'].max()
+                            HOME_PASS_CAYPA_MIN = home_passer_df['CAY/PA'].min()
+                            HOME_PASS_YAC_MEAN = home_passer_df['YAC'].mean() 
+                            HOME_PASS_YAC_STD = home_passer_df['YAC'].std()
+                            HOME_PASS_YAC_MAX = home_passer_df['YAC'].max()
+                            HOME_PASS_YAC_MIN = home_passer_df['YAC'].min()
+                            HOME_PASS_YACCMP_MEAN = home_passer_df['YAC/Cmp'].mean() 
+                            HOME_PASS_YACCMP_STD = home_passer_df['YAC/Cmp'].std()
+                            HOME_PASS_YACCMP_MAX = home_passer_df['YAC/Cmp'].max()
+                            HOME_PASS_YACCMP_MIN = home_passer_df['YAC/Cmp'].min()
+                            HOME_PASS_DROPS_MEAN = home_passer_df['Drops'].mean() 
+                            HOME_PASS_DROPS_STD = home_passer_df['Drops'].std()
+                            HOME_PASS_DROPS_MAX = home_passer_df['Drops'].max()
+                            HOME_PASS_DROPS_MIN = home_passer_df['Drops'].min()
+                            HOME_PASS_DROPPCT_MEAN = home_passer_df['Drop%'].mean() 
+                            HOME_PASS_DROPPCT_STD = home_passer_df['Drop%'].std()
+                            HOME_PASS_DROPPCT_MAX = home_passer_df['Drop%'].max()
+                            HOME_PASS_DROPPCT_MIN = home_passer_df['Drop%'].min()
+                            HOME_PASS_BADTH_MEAN = home_passer_df['BadTh'].mean() 
+                            HOME_PASS_BADTH_STD = home_passer_df['BadTh'].std()
+                            HOME_PASS_BADTH_MAX = home_passer_df['BadTh'].max()
+                            HOME_PASS_BADTH_MIN = home_passer_df['BadTh'].min()
+                            HOME_PASS_SK_MEAN = home_passer_df['Sk'].mean() 
+                            HOME_PASS_SK_STD = home_passer_df['Sk'].std()
+                            HOME_PASS_SK_MAX = home_passer_df['Sk'].max()
+                            HOME_PASS_SK_MIN = home_passer_df['Sk'].min()
+                            HOME_PASS_BLITZ_MEAN = home_passer_df['Bltz'].mean() 
+                            HOME_PASS_BLITZ_STD = home_passer_df['Bltz'].std()
+                            HOME_PASS_BLITZ_MAX = home_passer_df['Bltz'].max()
+                            HOME_PASS_BLITZ_MIN = home_passer_df['Bltz'].min()
+                            HOME_PASS_HRRY_MEAN = home_passer_df['Hrry'].mean() 
+                            HOME_PASS_HRRY_STD = home_passer_df['Hrry'].std()
+                            HOME_PASS_HRRY_MAX = home_passer_df['Hrry'].max()
+                            HOME_PASS_HRRY_MIN = home_passer_df['Hrry'].min()
+                            HOME_PASS_HITS_MEAN = home_passer_df['Hits'].mean() 
+                            HOME_PASS_HITS_STD = home_passer_df['Hits'].std()
+                            HOME_PASS_HITS_MAX = home_passer_df['Hits'].max()
+                            HOME_PASS_HITS_MIN = home_passer_df['Hits'].min()
+                            HOME_PASS_PRSS_MEAN = home_passer_df['Prss'].mean() 
+                            HOME_PASS_PRSS_STD = home_passer_df['Prss'].std()
+                            HOME_PASS_PRSS_MAX = home_passer_df['Prss'].max()
+                            HOME_PASS_PRSS_MIN = home_passer_df['Prss'].min()
+                            HOME_PASS_PRSSPCT_MEAN = home_passer_df['Prss%'].mean() 
+                            HOME_PASS_PRSSPCT_STD = home_passer_df['Prss%'].std()
+                            HOME_PASS_PRSSPCT_MAX = home_passer_df['Prss%'].max()
+                            HOME_PASS_PRSSPCT_MIN = home_passer_df['Prss%'].min()
+                            HOME_PASS_SCRM_MEAN = home_passer_df['Scrm'].mean() 
+                            HOME_PASS_SCRM_STD = home_passer_df['Scrm'].std()
+                            HOME_PASS_SCRM_MAX = home_passer_df['Scrm'].max()
+                            HOME_PASS_SCRM_MIN = home_passer_df['Scrm'].min()
+                            HOME_PASS_YDSSCRM_MEAN = home_passer_df['Yds/Scrm'].mean() 
+                            HOME_PASS_YDSSCRM_STD = home_passer_df['Yds/Scrm'].std()
+                            HOME_PASS_YDSSCRM_MAX = home_passer_df['Yds/Scrm'].max()
+                            HOME_PASS_YDSSCRM_MIN = home_passer_df['Yds/Scrm'].min()
 
                         # If CAREER passing table is empty, we want to pass passer's career stats from 2018 to present day
                         table = pd.read_sql(f"SELECT name FROM sqlite_master WHERE type='table' AND name='passers_2018-present'", passers_con)
                         if table.empty:
-                            AWAY_PASS_COMP_CAREER = -1
-                            AWAY_PASS_ATT_CAREER = -1
-                            AWAY_PASS_YDS_CAREER = -1
-                            # TODO ... ... ...
+                            # DROP SCRIMMAGE DATA AND DROP DATA FOR CAREER STATS
+                            AWAY_PASS_COMP_CAREER_MEAN = -1 
+                            AWAY_PASS_COMP_CAREER_STD = -1
+                            AWAY_PASS_COMP_CAREER_MAX = -1
+                            AWAY_PASS_COMP_CAREER_MIN = -1
+                            AWAY_PASS_ATT_CAREER_MEAN = -1 
+                            AWAY_PASS_ATT_CAREER_STD = -1
+                            AWAY_PASS_ATT_CAREER_MAX = -1
+                            AWAY_PASS_ATT_CAREER_MIN = -1
+                            AWAY_PASS_YDS_CAREER_MEAN = -1 
+                            AWAY_PASS_YDS_CAREER_STD = -1
+                            AWAY_PASS_YDS_CAREER_MAX = -1
+                            AWAY_PASS_YDS_CAREER_MIN = -1
+                            AWAY_PASS_1D_CAREER_MEAN = -1 
+                            AWAY_PASS_1D_CAREER_STD = -1
+                            AWAY_PASS_1D_CAREER_MAX = -1
+                            AWAY_PASS_1D_CAREER_MIN = -1
+                            AWAY_PASS_1DPCT_CAREER_MEAN = -1 
+                            AWAY_PASS_1DPCT_CAREER_STD = -1
+                            AWAY_PASS_1DPCT_CAREER_MAX = -1
+                            AWAY_PASS_1DPCT_CAREER_MIN = -1
+                            AWAY_PASS_IAY_CAREER_MEAN = -1 
+                            AWAY_PASS_IAY_CAREER_STD = -1
+                            AWAY_PASS_IAY_CAREER_MAX = -1
+                            AWAY_PASS_IAY_CAREER_MIN = -1
+                            AWAY_PASS_IAYPA_CAREER_MEAN = -1 
+                            AWAY_PASS_IAYPA_CAREER_STD = -1
+                            AWAY_PASS_IAYPA_CAREER_MAX = -1
+                            AWAY_PASS_IAYPA_CAREER_MIN = -1
+                            AWAY_PASS_CAY_CAREER_MEAN = -1 
+                            AWAY_PASS_CAY_CAREER_STD = -1
+                            AWAY_PASS_CAY_CAREER_MAX = -1
+                            AWAY_PASS_CAY_CAREER_MIN = -1
+                            AWAY_PASS_CAYCMP_CAREER_MEAN = -1 
+                            AWAY_PASS_CAYCMP_CAREER_STD = -1
+                            AWAY_PASS_CAYCMP_CAREER_MAX = -1
+                            AWAY_PASS_CAYCMP_CAREER_MIN = -1
+                            AWAY_PASS_CAYPA_CAREER_MEAN = -1 
+                            AWAY_PASS_CAYPA_CAREER_STD = -1
+                            AWAY_PASS_CAYPA_CAREER_MAX = -1
+                            AWAY_PASS_CAYPA_CAREER_MIN = -1
+                            AWAY_PASS_YAC_CAREER_MEAN = -1 
+                            AWAY_PASS_YAC_CAREER_STD = -1
+                            AWAY_PASS_YAC_CAREER_MAX = -1
+                            AWAY_PASS_YAC_CAREER_MIN = -1
+                            AWAY_PASS_YACCMP_CAREER_MEAN = -1 
+                            AWAY_PASS_YACCMP_CAREER_STD = -1
+                            AWAY_PASS_YACCMP_CAREER_MAX = -1
+                            AWAY_PASS_YACCMP_CAREER_MIN = -1
+                            AWAY_PASS_BADTH_CAREER_MEAN = -1 
+                            AWAY_PASS_BADTH_CAREER_STD = -1
+                            AWAY_PASS_BADTH_CAREER_MAX = -1
+                            AWAY_PASS_BADTH_CAREER_MIN = -1
+                            AWAY_PASS_SK_CAREER_MEAN = -1 
+                            AWAY_PASS_SK_CAREER_STD = -1
+                            AWAY_PASS_SK_CAREER_MAX = -1
+                            AWAY_PASS_SK_CAREER_MIN = -1
+                            AWAY_PASS_BLITZ_CAREER_MEAN = -1 
+                            AWAY_PASS_BLITZ_CAREER_STD = -1
+                            AWAY_PASS_BLITZ_CAREER_MAX = -1
+                            AWAY_PASS_BLITZ_CAREER_MIN = -1
+                            AWAY_PASS_HRRY_CAREER_MEAN = -1 
+                            AWAY_PASS_HRRY_CAREER_STD = -1
+                            AWAY_PASS_HRRY_CAREER_MAX = -1
+                            AWAY_PASS_HRRY_CAREER_MIN = -1
+                            AWAY_PASS_HITS_CAREER_MEAN = -1 
+                            AWAY_PASS_HITS_CAREER_STD = -1
+                            AWAY_PASS_HITS_CAREER_MAX = -1
+                            AWAY_PASS_HITS_CAREER_MIN = -1
+                            AWAY_PASS_PRSS_CAREER_MEAN = -1 
+                            AWAY_PASS_PRSS_CAREER_STD = -1
+                            AWAY_PASS_PRSS_CAREER_MAX = -1
+                            AWAY_PASS_PRSS_CAREER_MIN = -1
+                            AWAY_PASS_PRSSPCT_CAREER_MEAN = -1 
+                            AWAY_PASS_PRSSPCT_CAREER_STD = -1
+                            AWAY_PASS_PRSSPCT_CAREER_MAX = -1
+                            AWAY_PASS_PRSSPCT_CAREER_MIN = -1
+                            HOME_PASS_ATT_CAREER_MEAN = -1 
+                            HOME_PASS_ATT_CAREER_STD = -1
+                            HOME_PASS_ATT_CAREER_MAX = -1
+                            HOME_PASS_ATT_CAREER_MIN = -1
+                            HOME_PASS_YDS_CAREER_MEAN = -1 
+                            HOME_PASS_YDS_CAREER_STD = -1
+                            HOME_PASS_YDS_CAREER_MAX = -1
+                            HOME_PASS_YDS_CAREER_MIN = -1
+                            HOME_PASS_1D_CAREER_MEAN = -1 
+                            HOME_PASS_1D_CAREER_STD = -1
+                            HOME_PASS_1D_CAREER_MAX = -1
+                            HOME_PASS_1D_CAREER_MIN = -1
+                            HOME_PASS_1DPCT_CAREER_MEAN = -1 
+                            HOME_PASS_1DPCT_CAREER_STD = -1
+                            HOME_PASS_1DPCT_CAREER_MAX = -1
+                            HOME_PASS_1DPCT_CAREER_MIN = -1
+                            HOME_PASS_IAY_CAREER_MEAN = -1 
+                            HOME_PASS_IAY_CAREER_STD = -1
+                            HOME_PASS_IAY_CAREER_MAX = -1
+                            HOME_PASS_IAY_CAREER_MIN = -1
+                            HOME_PASS_IAYPA_CAREER_MEAN = -1 
+                            HOME_PASS_IAYPA_CAREER_STD = -1
+                            HOME_PASS_IAYPA_CAREER_MAX = -1
+                            HOME_PASS_IAYPA_CAREER_MIN = -1
+                            HOME_PASS_CAY_CAREER_MEAN = -1 
+                            HOME_PASS_CAY_CAREER_STD = -1
+                            HOME_PASS_CAY_CAREER_MAX = -1
+                            HOME_PASS_CAY_CAREER_MIN = -1
+                            HOME_PASS_CAYCMP_CAREER_MEAN = -1 
+                            HOME_PASS_CAYCMP_CAREER_STD = -1
+                            HOME_PASS_CAYCMP_CAREER_MAX = -1
+                            HOME_PASS_CAYCMP_CAREER_MIN = -1
+                            HOME_PASS_CAYPA_CAREER_MEAN = -1 
+                            HOME_PASS_CAYPA_CAREER_STD = -1
+                            HOME_PASS_CAYPA_CAREER_MAX = -1
+                            HOME_PASS_CAYPA_CAREER_MIN = -1
+                            HOME_PASS_YAC_CAREER_MEAN = -1 
+                            HOME_PASS_YAC_CAREER_STD = -1
+                            HOME_PASS_YAC_CAREER_MAX = -1
+                            HOME_PASS_YAC_CAREER_MIN = -1
+                            HOME_PASS_YACCMP_CAREER_MEAN = -1 
+                            HOME_PASS_YACCMP_CAREER_STD = -1
+                            HOME_PASS_YACCMP_CAREER_MAX = -1
+                            HOME_PASS_YACCMP_CAREER_MIN = -1
+                            HOME_PASS_BADTH_CAREER_MEAN = -1 
+                            HOME_PASS_BADTH_CAREER_STD = -1
+                            HOME_PASS_BADTH_CAREER_MAX = -1
+                            HOME_PASS_BADTH_CAREER_MIN = -1
+                            HOME_PASS_SK_CAREER_MEAN = -1 
+                            HOME_PASS_SK_CAREER_STD = -1
+                            HOME_PASS_SK_CAREER_MAX = -1
+                            HOME_PASS_SK_CAREER_MIN = -1
+                            HOME_PASS_BLITZ_CAREER_MEAN = -1 
+                            HOME_PASS_BLITZ_CAREER_STD = -1
+                            HOME_PASS_BLITZ_CAREER_MAX = -1
+                            HOME_PASS_BLITZ_CAREER_MIN = -1
+                            HOME_PASS_HRRY_CAREER_MEAN = -1 
+                            HOME_PASS_HRRY_CAREER_STD = -1
+                            HOME_PASS_HRRY_CAREER_MAX = -1
+                            HOME_PASS_HRRY_CAREER_MIN = -1
+                            HOME_PASS_HITS_CAREER_MEAN = -1 
+                            HOME_PASS_HITS_CAREER_STD = -1
+                            HOME_PASS_HITS_CAREER_MAX = -1
+                            HOME_PASS_HITS_CAREER_MIN = -1
+                            HOME_PASS_PRSS_CAREER_MEAN = -1 
+                            HOME_PASS_PRSS_CAREER_STD = -1
+                            HOME_PASS_PRSS_CAREER_MAX = -1
+                            HOME_PASS_PRSS_CAREER_MIN = -1
+                            HOME_PASS_PRSSPCT_CAREER_MEAN = -1 
+                            HOME_PASS_PRSSPCT_CAREER_STD = -1
+                            HOME_PASS_PRSSPCT_CAREER_MAX = -1
+                            HOME_PASS_PRSSPCT_CAREER_MIN = -1
+
+                            AWAY_PASS_BIG_GAME_W = -1
+                            AWAY_PASS_BIG_GAME_L = -1
+                            AWAY_PASS_PLAYOFF_W = -1
+                            AWAY_PASS_PLAYOFF_L = -1
+                            AWAY_PASS_CHAMP_W = -1
+                            AWAY_PASS_CHAMP_L = -1
+                            HOME_PASS_BIG_GAME_W = -1
+                            HOME_PASS_BIG_GAME_L = -1
+                            HOME_PASS_PLAYOFF_W = -1
+                            HOME_PASS_PLAYOFF_L = -1
+                            HOME_PASS_CHAMP_W = -1
+                            HOME_PASS_CHAMP_L = -1
                         else:
                             # if the table is not empty, take the mean, std, max and min from each of the RELEVANT VALues
                             away_passer_career_df = pd.read_sql_query(f"SELECT * FROM passers_2018-present WHERE and Player = {visiting_passer['Player']};", passers_con)
                             home_passer_career_df = pd.read_sql_query(f"SELECT * FROM passers_2018-present WHERE and Player = {home_passer['Player']};", passers_con)
 
-                            AWAY_PASS_COMP_CAREER_MEAN = away_passer_career_df['AWAY_PASS_COMP'].mean()
-                            AWAY_PASS_COMP_CAREER_STD = away_passer_career_df['AWAY_PASS_COMP'].std()
-                            AWAY_PASS_COMP_CAREER_MAX = away_passer_career_df['AWAY_PASS_COMP'].min()
-                            AWAY_PASS_COMP_CAREER_MIN = away_passer_career_df['AWAY_PASS_COMP'].max()
-                            # TODO ... ... ...
+                            AWAY_PASS_COMP_CAREER_MEAN = away_passer_career_df['Cmp'].mean()
+                            AWAY_PASS_COMP_CAREER_STD = away_passer_career_df['Cmp'].std()
+                            AWAY_PASS_COMP_CAREER_MAX = away_passer_career_df['Cmp'].max()
+                            AWAY_PASS_COMP_CAREER_MIN = away_passer_career_df['Cmp'].min()
+                            AWAY_PASS_ATT_CAREER_MEAN = away_passer_career_df['Att'].mean() 
+                            AWAY_PASS_ATT_CAREER_STD = away_passer_career_df['Att'].std()
+                            AWAY_PASS_ATT_CAREER_MAX = away_passer_career_df['Att'].max()
+                            AWAY_PASS_ATT_CAREER_MIN = away_passer_career_df['Att'].min()
+                            AWAY_PASS_YDS_CAREER_MEAN = away_passer_career_df['Yds'].mean() 
+                            AWAY_PASS_YDS_CAREER_STD = away_passer_career_df['Yds'].std()
+                            AWAY_PASS_YDS_CAREER_MAX = away_passer_career_df['Yds'].max()
+                            AWAY_PASS_YDS_CAREER_MIN = away_passer_career_df['Yds'].min()
+                            AWAY_PASS_1D_CAREER_MEAN = away_passer_career_df['1D'].mean() 
+                            AWAY_PASS_1D_CAREER_STD = away_passer_career_df['1D'].std()
+                            AWAY_PASS_1D_CAREER_MAX = away_passer_career_df['1D'].max()
+                            AWAY_PASS_1D_CAREER_MIN = away_passer_career_df['1D'].min()
+                            AWAY_PASS_1DPCT_CAREER_MEAN = away_passer_career_df['1D%'].mean() 
+                            AWAY_PASS_1DPCT_CAREER_STD = away_passer_career_df['1D%'].std()
+                            AWAY_PASS_1DPCT_CAREER_MAX = away_passer_career_df['1D%'].max()
+                            AWAY_PASS_1DPCT_CAREER_MIN = away_passer_career_df['1D%'].min()
+                            AWAY_PASS_IAY_CAREER_MEAN = away_passer_career_df['IAY'].mean() 
+                            AWAY_PASS_IAY_CAREER_STD = away_passer_career_df['IAY'].std()
+                            AWAY_PASS_IAY_CAREER_MAX = away_passer_career_df['IAY'].max()
+                            AWAY_PASS_IAY_CAREER_MIN = away_passer_career_df['IAY'].min()
+                            AWAY_PASS_IAYPA_CAREER_MEAN = away_passer_career_df['IAY/PA'].mean() 
+                            AWAY_PASS_IAYPA_CAREER_STD = away_passer_career_df['IAY/PA'].std()
+                            AWAY_PASS_IAYPA_CAREER_MAX = away_passer_career_df['IAY/PA'].max()
+                            AWAY_PASS_IAYPA_CAREER_MIN = away_passer_career_df['IAY/PA'].min()
+                            AWAY_PASS_CAY_CAREER_MEAN = away_passer_career_df['CAY'].mean() 
+                            AWAY_PASS_CAY_CAREER_STD = away_passer_career_df['CAY'].std()
+                            AWAY_PASS_CAY_CAREER_MAX = away_passer_career_df['CAY'].max()
+                            AWAY_PASS_CAY_CAREER_MIN = away_passer_career_df['CAY'].min()
+                            AWAY_PASS_CAYCMP_CAREER_MEAN = away_passer_career_df['CAY/Cmp'].mean() 
+                            AWAY_PASS_CAYCMP_CAREER_STD = away_passer_career_df['CAY/Cmp'].std()
+                            AWAY_PASS_CAYCMP_CAREER_MAX = away_passer_career_df['CAY/Cmp'].max()
+                            AWAY_PASS_CAYCMP_CAREER_MIN = away_passer_career_df['CAY/Cmp'].min()
+                            AWAY_PASS_CAYPA_CAREER_MEAN = away_passer_career_df['CAY/PA'].mean() 
+                            AWAY_PASS_CAYPA_CAREER_STD = away_passer_career_df['CAY/PA'].std()
+                            AWAY_PASS_CAYPA_CAREER_MAX = away_passer_career_df['CAY/PA'].max()
+                            AWAY_PASS_CAYPA_CAREER_MIN = away_passer_career_df['CAY/PA'].min()
+                            AWAY_PASS_YAC_CAREER_MEAN = away_passer_career_df['YAC'].mean() 
+                            AWAY_PASS_YAC_CAREER_STD = away_passer_career_df['YAC'].std()
+                            AWAY_PASS_YAC_CAREER_MAX = away_passer_career_df['YAC'].max()
+                            AWAY_PASS_YAC_CAREER_MIN = away_passer_career_df['YAC'].min()
+                            AWAY_PASS_YACCMP_CAREER_MEAN = away_passer_career_df['YAC/Cmp'].mean() 
+                            AWAY_PASS_YACCMP_CAREER_STD = away_passer_career_df['YAC/Cmp'].std()
+                            AWAY_PASS_YACCMP_CAREER_MAX = away_passer_career_df['YAC/Cmp'].max()
+                            AWAY_PASS_YACCMP_CAREER_MIN = away_passer_career_df['YAC/Cmp'].min()
+                            AWAY_PASS_BADTH_CAREER_MEAN = away_passer_career_df['BadTh'].mean() 
+                            AWAY_PASS_BADTH_CAREER_STD = away_passer_career_df['BadTh'].std()
+                            AWAY_PASS_BADTH_CAREER_MAX = away_passer_career_df['BadTh'].max()
+                            AWAY_PASS_BADTH_CAREER_MIN = away_passer_career_df['BadTh'].min()
+                            AWAY_PASS_SK_CAREER_MEAN = away_passer_career_df['Sk'].mean() 
+                            AWAY_PASS_SK_CAREER_STD = away_passer_career_df['Sk'].std()
+                            AWAY_PASS_SK_CAREER_MAX = away_passer_career_df['Sk'].max()
+                            AWAY_PASS_SK_CAREER_MIN = away_passer_career_df['Sk'].min()
+                            AWAY_PASS_BLITZ_CAREER_MEAN = away_passer_career_df['Bltz'].mean() 
+                            AWAY_PASS_BLITZ_CAREER_STD = away_passer_career_df['Bltz'].std()
+                            AWAY_PASS_BLITZ_CAREER_MAX = away_passer_career_df['Bltz'].max()
+                            AWAY_PASS_BLITZ_CAREER_MIN = away_passer_career_df['Bltz'].min()
+                            AWAY_PASS_HRRY_CAREER_MEAN = away_passer_career_df['Hrry'].mean() 
+                            AWAY_PASS_HRRY_CAREER_STD = away_passer_career_df['Hrry'].std()
+                            AWAY_PASS_HRRY_CAREER_MAX = away_passer_career_df['Hrry'].max()
+                            AWAY_PASS_HRRY_CAREER_MIN = away_passer_career_df['Hrry'].min()
+                            AWAY_PASS_HITS_CAREER_MEAN = away_passer_career_df['Hits'].mean() 
+                            AWAY_PASS_HITS_CAREER_STD = away_passer_career_df['Hits'].std()
+                            AWAY_PASS_HITS_CAREER_MAX = away_passer_career_df['Hits'].max()
+                            AWAY_PASS_HITS_CAREER_MIN = away_passer_career_df['Hits'].min()
+                            AWAY_PASS_PRSS_CAREER_MEAN = away_passer_career_df['Prss'].mean() 
+                            AWAY_PASS_PRSS_CAREER_STD = away_passer_career_df['Prss'].std()
+                            AWAY_PASS_PRSS_CAREER_MAX = away_passer_career_df['Prss'].max()
+                            AWAY_PASS_PRSS_CAREER_MIN = away_passer_career_df['Prss'].min()
+                            AWAY_PASS_PRSSPCT_CAREER_MEAN = away_passer_career_df['Prss%'].mean() 
+                            AWAY_PASS_PRSSPCT_CAREER_STD = away_passer_career_df['Prss%'].std()
+                            AWAY_PASS_PRSSPCT_CAREER_MAX = away_passer_career_df['Prss%'].max()
+                            AWAY_PASS_PRSSPCT_CAREER_MIN = away_passer_career_df['Prss%'].min()
+
+                            AWAY_PASS_BIG_GAME_W = away_passer_career_df['BIG_GAME_W'].sum()
+                            AWAY_PASS_BIG_GAME_L = away_passer_career_df['BIG_GAME_L'].sum()
+                            AWAY_PASS_PLAYOFF_W = away_passer_career_df['PLAYOFF_W'].sum()
+                            AWAY_PASS_PLAYOFF_L = away_passer_career_df['PLAYOFF_L'].sum()
+                            AWAY_PASS_CHAMP_W = away_passer_career_df['CHAMP_W'].sum()
+                            AWAY_PASS_CHAMP_L = away_passer_career_df['CHAMP_L'].sum()
+
+                            HOME_PASS_COMP_CAREER_MEAN = home_passer_career_df['Cmp'].mean()
+                            HOME_PASS_COMP_CAREER_STD = home_passer_career_df['Cmp'].std()
+                            HOME_PASS_COMP_CAREER_MAX = home_passer_career_df['Cmp'].min()
+                            HOME_PASS_COMP_CAREER_MIN = home_passer_career_df['Cmp'].max()
+                            HOME_PASS_ATT_CAREER_MEAN = home_passer_career_df['Att'].mean() 
+                            HOME_PASS_ATT_CAREER_STD = home_passer_career_df['Att'].std()
+                            HOME_PASS_ATT_CAREER_MAX = home_passer_career_df['Att'].max()
+                            HOME_PASS_ATT_CAREER_MIN = home_passer_career_df['Att'].min()
+                            HOME_PASS_YDS_CAREER_MEAN = home_passer_career_df['Yds'].mean() 
+                            HOME_PASS_YDS_CAREER_STD = home_passer_career_df['Yds'].std()
+                            HOME_PASS_YDS_CAREER_MAX = home_passer_career_df['Yds'].max()
+                            HOME_PASS_YDS_CAREER_MIN = home_passer_career_df['Yds'].min()
+                            HOME_PASS_1D_CAREER_MEAN = home_passer_career_df['1D'].mean() 
+                            HOME_PASS_1D_CAREER_STD = home_passer_career_df['1D'].std()
+                            HOME_PASS_1D_CAREER_MAX = home_passer_career_df['1D'].max()
+                            HOME_PASS_1D_CAREER_MIN = home_passer_career_df['1D'].min()
+                            HOME_PASS_1DPCT_CAREER_MEAN = home_passer_career_df['1D%'].mean() 
+                            HOME_PASS_1DPCT_CAREER_STD = home_passer_career_df['1D%'].std()
+                            HOME_PASS_1DPCT_CAREER_MAX = home_passer_career_df['1D%'].max()
+                            HOME_PASS_1DPCT_CAREER_MIN = home_passer_career_df['1D%'].min()
+                            HOME_PASS_IAY_CAREER_MEAN = home_passer_career_df['IAY'].mean() 
+                            HOME_PASS_IAY_CAREER_STD = home_passer_career_df['IAY'].std()
+                            HOME_PASS_IAY_CAREER_MAX = home_passer_career_df['IAY'].max()
+                            HOME_PASS_IAY_CAREER_MIN = home_passer_career_df['IAY'].min()
+                            HOME_PASS_IAYPA_CAREER_MEAN = home_passer_career_df['IAY/PA'].mean() 
+                            HOME_PASS_IAYPA_CAREER_STD = home_passer_career_df['IAY/PA'].std()
+                            HOME_PASS_IAYPA_CAREER_MAX = home_passer_career_df['IAY/PA'].max()
+                            HOME_PASS_IAYPA_CAREER_MIN = home_passer_career_df['IAY/PA'].min()
+                            HOME_PASS_CAY_CAREER_MEAN = home_passer_career_df['CAY'].mean() 
+                            HOME_PASS_CAY_CAREER_STD = home_passer_career_df['CAY'].std()
+                            HOME_PASS_CAY_CAREER_MAX = home_passer_career_df['CAY'].max()
+                            HOME_PASS_CAY_CAREER_MIN = home_passer_career_df['CAY'].min()
+                            HOME_PASS_CAYCMP_CAREER_MEAN = home_passer_career_df['CAY/Cmp'].mean() 
+                            HOME_PASS_CAYCMP_CAREER_STD = home_passer_career_df['CAY/Cmp'].std()
+                            HOME_PASS_CAYCMP_CAREER_MAX = home_passer_career_df['CAY/Cmp'].max()
+                            HOME_PASS_CAYCMP_CAREER_MIN = home_passer_career_df['CAY/Cmp'].min()
+                            HOME_PASS_CAYPA_CAREER_MEAN = home_passer_career_df['CAY/PA'].mean() 
+                            HOME_PASS_CAYPA_CAREER_STD = home_passer_career_df['CAY/PA'].std()
+                            HOME_PASS_CAYPA_CAREER_MAX = home_passer_career_df['CAY/PA'].max()
+                            HOME_PASS_CAYPA_CAREER_MIN = home_passer_career_df['CAY/PA'].min()
+                            HOME_PASS_YAC_CAREER_MEAN = home_passer_career_df['YAC'].mean() 
+                            HOME_PASS_YAC_CAREER_STD = home_passer_career_df['YAC'].std()
+                            HOME_PASS_YAC_CAREER_MAX = home_passer_career_df['YAC'].max()
+                            HOME_PASS_YAC_CAREER_MIN = home_passer_career_df['YAC'].min()
+                            HOME_PASS_YACCMP_CAREER_MEAN = home_passer_career_df['YAC/Cmp'].mean() 
+                            HOME_PASS_YACCMP_CAREER_STD = home_passer_career_df['YAC/Cmp'].std()
+                            HOME_PASS_YACCMP_CAREER_MAX = home_passer_career_df['YAC/Cmp'].max()
+                            HOME_PASS_YACCMP_CAREER_MIN = home_passer_career_df['YAC/Cmp'].min()
+                            HOME_PASS_BADTH_CAREER_MEAN = home_passer_career_df['BadTh'].mean() 
+                            HOME_PASS_BADTH_CAREER_STD = home_passer_career_df['BadTh'].std()
+                            HOME_PASS_BADTH_CAREER_MAX = home_passer_career_df['BadTh'].max()
+                            HOME_PASS_BADTH_CAREER_MIN = home_passer_career_df['BadTh'].min()
+                            HOME_PASS_SK_CAREER_MEAN = home_passer_career_df['Sk'].mean() 
+                            HOME_PASS_SK_CAREER_STD = home_passer_career_df['Sk'].std()
+                            HOME_PASS_SK_CAREER_MAX = home_passer_career_df['Sk'].max()
+                            HOME_PASS_SK_CAREER_MIN = home_passer_career_df['Sk'].min()
+                            HOME_PASS_BLITZ_CAREER_MEAN = home_passer_career_df['Bltz'].mean() 
+                            HOME_PASS_BLITZ_CAREER_STD = home_passer_career_df['Bltz'].std()
+                            HOME_PASS_BLITZ_CAREER_MAX = home_passer_career_df['Bltz'].max()
+                            HOME_PASS_BLITZ_CAREER_MIN = home_passer_career_df['Bltz'].min()
+                            HOME_PASS_HRRY_CAREER_MEAN = home_passer_career_df['Hrry'].mean() 
+                            HOME_PASS_HRRY_CAREER_STD = home_passer_career_df['Hrry'].std()
+                            HOME_PASS_HRRY_CAREER_MAX = home_passer_career_df['Hrry'].max()
+                            HOME_PASS_HRRY_CAREER_MIN = home_passer_career_df['Hrry'].min()
+                            HOME_PASS_HITS_CAREER_MEAN = home_passer_career_df['Hits'].mean() 
+                            HOME_PASS_HITS_CAREER_STD = home_passer_career_df['Hits'].std()
+                            HOME_PASS_HITS_CAREER_MAX = home_passer_career_df['Hits'].max()
+                            HOME_PASS_HITS_CAREER_MIN = home_passer_career_df['Hits'].min()
+                            HOME_PASS_PRSS_CAREER_MEAN = home_passer_career_df['Prss'].mean() 
+                            HOME_PASS_PRSS_CAREER_STD = home_passer_career_df['Prss'].std()
+                            HOME_PASS_PRSS_CAREER_MAX = home_passer_career_df['Prss'].max()
+                            HOME_PASS_PRSS_CAREER_MIN = home_passer_career_df['Prss'].min()
+                            HOME_PASS_PRSSPCT_CAREER_MEAN = home_passer_career_df['Prss%'].mean() 
+                            HOME_PASS_PRSSPCT_CAREER_STD = home_passer_career_df['Prss%'].std()
+                            HOME_PASS_PRSSPCT_CAREER_MAX = home_passer_career_df['Prss%'].max()
+                            HOME_PASS_PRSSPCT_CAREER_MIN = home_passer_career_df['Prss%'].min()
+
+                            HOME_PASS_BIG_GAME_W = home_passer_career_df['BIG_GAME_W'].sum()
+                            HOME_PASS_BIG_GAME_L = home_passer_career_df['BIG_GAME_L'].sum()
+                            HOME_PASS_PLAYOFF_W = home_passer_career_df['PLAYOFF_W'].sum()
+                            HOME_PASS_PLAYOFF_L = home_passer_career_df['PLAYOFF_L'].sum()
+                            HOME_PASS_CHAMP_W = home_passer_career_df['CHAMP_W'].sum()
+                            HOME_PASS_CHAMP_L = home_passer_career_df['CHAMP_L'].sum()
 
                         # at any rate: append the flat passer values to passers_{year}, as well as passers_2018-present, after adding 'big game' wins
                         passers_frame.to_sql(f"passers_{year}", passers_con, if_exists="append")
                         passers_frame.to_sql(f"passers_2018-present", passers_con, if_exists="append")
-
-                        exit(0)
-                        # visiting_passer = df.loc[df['Tm'] == vis].iloc[0]
-                        # home_passer = df.loc[df['Tm'] == home].iloc[0]
-
-                        # AWAY_PASS_COMP = visiting_passer["Cmp"]
-                        # AWAY_PASS_ATT = visiting_passer["Att"]
-                        # AWAY_PASS_YDS = visiting_passer["Yds"]
-                        # AWAY_PASS_1D = visiting_passer["1D"]
-                        # AWAY_PASS_1DPCT = visiting_passer["1D%"]
-                        # AWAY_PASS_IAY = visiting_passer["IAY"]
-                        # AWAY_PASS_IAYPA = visiting_passer["IAY/PA"]
-                        # AWAY_PASS_CAY = visiting_passer["CAY"]
-                        # AWAY_PASS_CAYCMP = visiting_passer["CAY/Cmp"]
-                        # AWAY_PASS_CAYPA = visiting_passer['CAY/PA']
-                        # AWAY_PASS_YAC = visiting_passer['YAC']
-                        # AWAY_PASS_YACCMP = visiting_passer['YAC/Cmp']
-                        # AWAY_PASS_DROPS = visiting_passer['Drops']
-                        # AWAY_PASS_DROPPCT = visiting_passer["Drop%"]
-                        # AWAY_PASS_BADTH = visiting_passer["BadTh"]
-                        # AWAY_PASS_SK = visiting_passer["Sk"]
-                        # AWAY_PASS_BLTZ = visiting_passer["Bltz"]
-                        # AWAY_PASS_HRRY = visiting_passer["Hrry"]
-                        # AWAY_PASS_HITS = visiting_passer["Hits"]
-                        # AWAY_PASS_PRSS = visiting_passer["Prss"]
-                        # AWAY_PASS_PRSSPCT = visiting_passer["Prss%"]
-                        # AWAY_PASS_SCRM = visiting_passer["Scrm"]
-                        # AWAY_PASS_YDSSCRM = visiting_passer["Yds/Scr"]
-                        # HOME_PASS_COMP = home_passer["Cmp"]
-                        # HOME_PASS_ATT = home_passer["Att"]
-                        # HOME_PASS_YDS = home_passer["Yds"]
-                        # HOME_PASS_1D = home_passer["1D"]
-                        # HOME_PASS_1DPCT = home_passer["1D%"]
-                        # HOME_PASS_IAY = home_passer["IAY"]
-                        # HOME_PASS_IAYPA = home_passer["IAY/PA"]
-                        # HOME_PASS_CAY = home_passer["CAY"]
-                        # HOME_PASS_CAYCMP = home_passer["CAY/Cmp"]
-                        # HOME_PASS_CAYPA = home_passer['CAY/PA']
-                        # HOME_PASS_YAC = home_passer['YAC']
-                        # HOME_PASS_YACCMP = home_passer['YAC/Cmp']
-                        # HOME_PASS_DROPS = home_passer['Drops']
-                        # HOME_PASS_DROPPCT = home_passer["Drop%"]
-                        # HOME_PASS_BADTH = home_passer["BadTh"]
-                        # HOME_PASS_SK = home_passer["Sk"]
-                        # HOME_PASS_BLTZ = home_passer["Bltz"]
-                        # HOME_PASS_HRRY = home_passer["Hrry"]
-                        # HOME_PASS_HITS = home_passer["Hits"]
-                        # HOME_PASS_PRSS = home_passer["Prss"]
-                        # HOME_PASS_PRSSPCT = home_passer["Prss%"]
-                        # HOME_PASS_SCRM = home_passer["Scrm"]
-                        # HOME_PASS_YDSSCRM = home_passer["Yds/Scr"]
 
                     #######################################################
                     #####   END COLLECTING DATA FOR PASSER TABLES     #####
@@ -854,6 +1490,7 @@ for year in years:
                             HOME_UNIQ_STARTERS_DEFENSE = -1
                             HOME_UNIQ_STARTERS_SKILL = -1
                             HOME_UNIQ_STARTERS_QB = -1
+
                         else:
                             home_uniq_starters_ol_query = f"SELECT COUNT(*) AS ol_count FROM starters_{year} where Pos in ('OL','LT','LG','C','RG','RT','OT','OG') and Team = {home} group by Team;"
                             count_df = pd.read_sql_query(home_uniq_starters_ol_query, player_snaps_con)
@@ -918,7 +1555,9 @@ for year in years:
             season_data.append({
                 'SEASON': year,
                 'AWAY_TEAM_NAME': vis,
+                'AWAY_TEAM_PREV_RANK': get_prev_year_rank(year, vis),
                 'HOME_TEAM_NAME': home,
+                'HOME_TEAM_PREV_RANK': get_prev_year_rank(year, home),
                 'AWAY_SCORE': AWAY_SCORE,
                 'HOME_SCORE': HOME_SCORE,
                 'WEEK': week,
@@ -932,12 +1571,6 @@ for year in years:
                 'HOME_UNIQ_STARTERS_DEFENSE': HOME_UNIQ_STARTERS_DEFENSE,
                 'HOME_UNIQ_STARTERS_OL': HOME_UNIQ_STARTERS_OL,
                 'HOME_UNIQ_STARTERS_SKILL': HOME_UNIQ_STARTERS_SKILL,
-                # 'AWAY_DEFENSE_YRS_EXP': 0,
-                # 'AWAY_OL_YRS_EXP': 0,
-                # 'AWAY_WR_YRS_EXP': 0,
-                # 'HOME_DEFENSE_YRS_EXP': 0, 
-                # 'HOME_OL_YRS_EXP': 0,
-                # 'HOME_WR_YRS_EXP': 0,
                 'AWAY_FD_MEAN': AWAY_FD_MEAN, 
                 'AWAY_FD_STD': AWAY_FD_STD,
                 'AWAY_FD_MAX': AWAY_FD_MAX,
@@ -1110,92 +1743,168 @@ for year in years:
                 'AWAY_PASS_YDSSCRM_STD': 0,
                 'AWAY_PASS_YDSSCRM_MAX': 0,
                 'AWAY_PASS_YDSSCRM_MIN': 0,
-                'AWAY_PASS_BIG_GAME_W': 0, # spread of -2.5 or tighter
+                'AWAY_PASS_COMP_CAREER_MEAN': 0, 
+                'AWAY_PASS_COMP_CAREER_STD': 0,
+                'AWAY_PASS_COMP_CAREER_MAX': 0,
+                'AWAY_PASS_COMP_CAREER_MIN': 0,
+                'AWAY_PASS_ATT_CAREER_MEAN': 0, 
+                'AWAY_PASS_ATT_CAREER_STD': 0,
+                'AWAY_PASS_ATT_CAREER_MAX': 0,
+                'AWAY_PASS_ATT_CAREER_MIN': 0,
+                'AWAY_PASS_YDS_CAREER_MEAN': 0, 
+                'AWAY_PASS_YDS_CAREER_STD': 0,
+                'AWAY_PASS_YDS_CAREER_MAX': 0,
+                'AWAY_PASS_YDS_CAREER_MIN': 0,
+                'AWAY_PASS_1D_CAREER_MEAN': 0, 
+                'AWAY_PASS_1D_CAREER_STD': 0,
+                'AWAY_PASS_1D_CAREER_MAX': 0,
+                'AWAY_PASS_1D_CAREER_MIN': 0,
+                'AWAY_PASS_1DPCT_CAREER_MEAN': 0, 
+                'AWAY_PASS_1DPCT_CAREER_STD': 0,
+                'AWAY_PASS_1DPCT_CAREER_MAX': 0,
+                'AWAY_PASS_1DPCT_CAREER_MIN': 0,
+                'AWAY_PASS_IAY_CAREER_MEAN': 0, 
+                'AWAY_PASS_IAY_CAREER_STD': 0,
+                'AWAY_PASS_IAY_CAREER_MAX': 0,
+                'AWAY_PASS_IAY_CAREER_MIN': 0,
+                'AWAY_PASS_IAYPA_CAREER_MEAN': 0, 
+                'AWAY_PASS_IAYPA_CAREER_STD': 0,
+                'AWAY_PASS_IAYPA_CAREER_MAX': 0,
+                'AWAY_PASS_IAYPA_CAREER_MIN': 0,
+                'AWAY_PASS_CAY_CAREER_MEAN': 0, 
+                'AWAY_PASS_CAY_CAREER_STD': 0,
+                'AWAY_PASS_CAY_CAREER_MAX': 0,
+                'AWAY_PASS_CAY_CAREER_MIN': 0,
+                'AWAY_PASS_CAYCMP_CAREER_MEAN': 0, 
+                'AWAY_PASS_CAYCMP_CAREER_STD': 0,
+                'AWAY_PASS_CAYCMP_CAREER_MAX': 0,
+                'AWAY_PASS_CAYCMP_CAREER_MIN': 0,
+                'AWAY_PASS_CAYPA_CAREER_MEAN': 0, 
+                'AWAY_PASS_CAYPA_CAREER_STD': 0,
+                'AWAY_PASS_CAYPA_CAREER_MAX': 0,
+                'AWAY_PASS_CAYPA_CAREER_MIN': 0,
+                'AWAY_PASS_YAC_CAREER_MEAN': 0, 
+                'AWAY_PASS_YAC_CAREER_STD': 0,
+                'AWAY_PASS_YAC_CAREER_MAX': 0,
+                'AWAY_PASS_YAC_CAREER_MIN': 0,
+                'AWAY_PASS_YACCMP_CAREER_MEAN': 0, 
+                'AWAY_PASS_YACCMP_CAREER_STD': 0,
+                'AWAY_PASS_YACCMP_CAREER_MAX': 0,
+                'AWAY_PASS_YACCMP_CAREER_MIN': 0,
+                'AWAY_PASS_BADTH_CAREER_MEAN': 0, 
+                'AWAY_PASS_BADTH_CAREER_STD': 0,
+                'AWAY_PASS_BADTH_CAREER_MAX': 0,
+                'AWAY_PASS_BADTH_CAREER_MIN': 0,
+                'AWAY_PASS_SK_CAREER_MEAN': 0, 
+                'AWAY_PASS_SK_CAREER_STD': 0,
+                'AWAY_PASS_SK_CAREER_MAX': 0,
+                'AWAY_PASS_SK_CAREER_MIN': 0,
+                'AWAY_PASS_BLITZ_CAREER_MEAN': 0, 
+                'AWAY_PASS_BLITZ_CAREER_STD': 0,
+                'AWAY_PASS_BLITZ_CAREER_MAX': 0,
+                'AWAY_PASS_BLITZ_CAREER_MIN': 0,
+                'AWAY_PASS_HRRY_CAREER_MEAN': 0, 
+                'AWAY_PASS_HRRY_CAREER_STD': 0,
+                'AWAY_PASS_HRRY_CAREER_MAX': 0,
+                'AWAY_PASS_HRRY_CAREER_MIN': 0,
+                'AWAY_PASS_HITS_CAREER_MEAN': 0, 
+                'AWAY_PASS_HITS_CAREER_STD': 0,
+                'AWAY_PASS_HITS_CAREER_MAX': 0,
+                'AWAY_PASS_HITS_CAREER_MIN': 0,
+                'AWAY_PASS_PRSS_CAREER_MEAN': 0, 
+                'AWAY_PASS_PRSS_CAREER_STD': 0,
+                'AWAY_PASS_PRSS_CAREER_MAX': 0,
+                'AWAY_PASS_PRSS_CAREER_MIN': 0,
+                'AWAY_PASS_PRSSPCT_CAREER_MEAN': 0, 
+                'AWAY_PASS_PRSSPCT_CAREER_STD': 0,
+                'AWAY_PASS_PRSSPCT_CAREER_MAX': 0,
+                'AWAY_PASS_PRSSPCT_CAREER_MIN': 0,
+                'AWAY_PASS_BIG_GAME_W': 0,
                 'AWAY_PASS_BIG_GAME_L': 0,
                 'AWAY_PASS_PLAYOFF_W': 0,
                 'AWAY_PASS_PLAYOFF_L': 0,
                 'AWAY_PASS_CHAMP_W': 0,
                 'AWAY_PASS_CHAMP_L': 0,
-                'HOME_FD_MEAN': 0, 
-                'HOME_FD_STD': 0,
-                'HOME_FD_MAX': 0,
-                'HOME_FD_MIN': 0,
-                'HOME_FD_AGAINST_MEAN': 0,
-                'HOME_FD_AGAINST_STD': 0,
-                'HOME_FD_AGAINST_MAX': 0,
-                'HOME_FD_AGAINST_MIN': 0,
-                'HOME_SACKS_MEAN': 0, 
-                'HOME_SACKS_STD': 0,
-                'HOME_SACKS_MAX': 0,
-                'HOME_SACKS_MIN': 0,
-                'HOME_SACKS_AGAINST_MEAN': 0, 
-                'HOME_SACKS_AGAINST_STD': 0,
-                'HOME_SACKS_AGAINST_MAX': 0,
-                'HOME_SACKS_AGAINST_MIN': 0,
-                'HOME_SACK_YDS_MEAN': 0, 
-                'HOME_SACK_YDS_STD': 0,
-                'HOME_SACK_YDS_MAX': 0,
-                'HOME_SACK_YDS_MIN': 0,
-                'HOME_SACK_YDS_AGAINST_MEAN': 0, 
-                'HOME_SACK_YDS_AGAINST_STD': 0,
-                'HOME_SACK_YDS_AGAINST_MAX': 0,
-                'HOME_SACK_YDS_AGAINST_MIN': 0,
-                'HOME_TOTAL_YDS_MEAN': 0, 
-                'HOME_TOTAL_YDS_STD': 0,
-                'HOME_TOTAL_YDS_MAX': 0,
-                'HOME_TOTAL_YDS_MIN': 0,
-                'HOME_FUMBLES_MEAN': 0, 
-                'HOME_FUMBLES_STD': 0,
-                'HOME_FUMBLES_MAX': 0,
-                'HOME_FUMBLES_MIN': 0,
-                'HOME_FUMBLES_LOST_MEAN': 0, 
-                'HOME_FUMBLES_LOST_STD': 0,
-                'HOME_FUMBLES_LOST_MAX': 0,
-                'HOME_FUMBLES_LOST_MIN': 0,
-                'HOME_TO_MEAN': 0, 
-                'HOME_TO_STD': 0,
-                'HOME_TO_MAX': 0,
-                'HOME_TO_MIN': 0,
-                'HOME_TO_AGAINST_MEAN': 0, 
-                'HOME_TO_AGAINST_STD': 0,
-                'HOME_TO_AGAINST_MAX': 0,
-                'HOME_TO_AGAINST_MIN': 0,
-                'HOME_PENALTIES_MEAN': 0, 
-                'HOME_PENALTIES_STD': 0,
-                'HOME_PENALTIES_MAX': 0,
-                'HOME_PENALTIES_MIN': 0,
-                'HOME_PENALTY_YARDS_MEAN': 0, 
-                'HOME_PENALTY_YARDS_STD': 0,
-                'HOME_PENALTY_YARDS_MAX': 0,
-                'HOME_PENALTY_YARDS_MIN': 0,
-                'HOME_3RD_DOWN_MEAN': 0, 
-                'HOME_3RD_DOWN_STD': 0,
-                'HOME_3RD_DOWN_MAX': 0,
-                'HOME_3RD_DOWN_MIN': 0,
-                'HOME_3RD_DOWN_ATT_MEAN': 0, 
-                'HOME_3RD_DOWN_ATT_STD': 0,
-                'HOME_3RD_DOWN_ATT_MAX': 0,
-                'HOME_3RD_DOWN_ATT_MIN': 0,
-                'HOME_3RD_DOWN_CONV_MEAN': 0, 
-                'HOME_3RD_DOWN_CONV_STD': 0,
-                'HOME_3RD_DOWN_CONV_MAX': 0,
-                'HOME_3RD_DOWN_CONV_MIN': 0,
-                'HOME_3RD_DOWN_AGAINST_MEAN': 0,
-                'HOME_3RD_DOWN_AGAINST_STD': 0,
-                'HOME_3RD_DOWN_AGAINST_MAX': 0,
-                'HOME_3RD_DOWN_AGAINST_MIN': 0,
-                'HOME_3RD_DOWN_ATT_AGAINST_MEAN': 0,
-                'HOME_3RD_DOWN_ATT_AGAINST_STD': 0,
-                'HOME_3RD_DOWN_ATT_AGAINST_MAX': 0,
-                'HOME_3RD_DOWN_ATT_AGAINST_MIN': 0,
-                'HOME_3RD_DOWN_CONV_AGAINST_MEAN': 0,
-                'HOME_3RD_DOWN_CONV_AGAINST_STD': 0,
-                'HOME_3RD_DOWN_CONV_AGAINST_MAX': 0,
-                'HOME_3RD_DOWN_CONV_AGAINST_MIN': 0,
-                'HOME_TOP_MEAN': 0, 
-                'HOME_TOP_STD': 0,
-                'HOME_TOP_MAX': 0,
-                'HOME_TOP_MIN': 0,
+                'HOME_FD_MEAN': HOME_FD_MEAN, 
+                'HOME_FD_STD': HOME_FD_STD,
+                'HOME_FD_MAX': HOME_FD_MAX,
+                'HOME_FD_MIN': HOME_FD_MIN,
+                'HOME_FD_AGAINST_MEAN': HOME_FD_AGAINST_MEAN,
+                'HOME_FD_AGAINST_STD': HOME_FD_AGAINST_STD,
+                'HOME_FD_AGAINST_MAX': HOME_FD_AGAINST_MAX,
+                'HOME_FD_AGAINST_MIN': HOME_FD_AGAINST_MIN,
+                'HOME_SACKS_MEAN': HOME_SACKS_MEAN, 
+                'HOME_SACKS_STD': HOME_SACKS_STD,
+                'HOME_SACKS_MAX': HOME_SACKS_MAX,
+                'HOME_SACKS_MIN': HOME_SACKS_MIN,
+                'HOME_SACKS_AGAINST_MEAN': HOME_SACKS_AGAINST_MEAN, 
+                'HOME_SACKS_AGAINST_STD': HOME_SACKS_AGAINST_STD,
+                'HOME_SACKS_AGAINST_MAX': HOME_SACKS_AGAINST_MAX,
+                'HOME_SACKS_AGAINST_MIN': HOME_SACKS_AGAINST_MIN,
+                'HOME_SACK_YDS_MEAN': HOME_SACK_YDS_MEAN, 
+                'HOME_SACK_YDS_STD': HOME_SACK_YDS_STD,
+                'HOME_SACK_YDS_MAX': HOME_SACK_YDS_MAX,
+                'HOME_SACK_YDS_MIN': HOME_SACK_YDS_MIN,
+                'HOME_SACK_YDS_AGAINST_MEAN': HOME_SACK_YDS_AGAINST_MEAN, 
+                'HOME_SACK_YDS_AGAINST_STD': HOME_SACK_YDS_AGAINST_STD,
+                'HOME_SACK_YDS_AGAINST_MAX': HOME_SACK_YDS_AGAINST_MAX,
+                'HOME_SACK_YDS_AGAINST_MIN': HOME_SACK_YDS_AGAINST_MIN,
+                'HOME_TOTAL_YDS_MEAN': HOME_TOTAL_YDS_MEAN, 
+                'HOME_TOTAL_YDS_STD': HOME_TOTAL_YDS_STD,
+                'HOME_TOTAL_YDS_MAX': HOME_TOTAL_YDS_MAX,
+                'HOME_TOTAL_YDS_MIN': HOME_TOTAL_YDS_MIN,
+                'HOME_FUMBLES_MEAN': HOME_FUMBLES_MEAN, 
+                'HOME_FUMBLES_STD': HOME_FUMBLES_STD,
+                'HOME_FUMBLES_MAX': HOME_FUMBLES_MAX,
+                'HOME_FUMBLES_MIN': HOME_FUMBLES_MIN,
+                'HOME_FUMBLES_LOST_MEAN': HOME_FUMBLES_LOST_MEAN, 
+                'HOME_FUMBLES_LOST_STD': HOME_FUMBLES_LOST_STD,
+                'HOME_FUMBLES_LOST_MAX': HOME_FUMBLES_LOST_MAX,
+                'HOME_FUMBLES_LOST_MIN': HOME_FUMBLES_LOST_MIN,
+                'HOME_TO_MEAN': HOME_TO_MEAN, 
+                'HOME_TO_STD': HOME_TO_STD,
+                'HOME_TO_MAX': HOME_TO_MAX,
+                'HOME_TO_MIN': HOME_TO_MIN,
+                'HOME_TO_AGAINST_MEAN': HOME_TO_AGAINST_MEAN, 
+                'HOME_TO_AGAINST_STD': HOME_TO_AGAINST_STD,
+                'HOME_TO_AGAINST_MAX': HOME_TO_AGAINST_MAX,
+                'HOME_TO_AGAINST_MIN': HOME_TO_AGAINST_MIN,
+                'HOME_PENALTIES_MEAN': HOME_PENALTIES_MEAN, 
+                'HOME_PENALTIES_STD': HOME_PENALTIES_STD,
+                'HOME_PENALTIES_MAX': HOME_PENALTIES_MAX,
+                'HOME_PENALTIES_MIN': HOME_PENALTIES_MIN,
+                'HOME_PENALTY_YARDS_MEAN': HOME_PENALTY_YARDS_MEAN, 
+                'HOME_PENALTY_YARDS_STD': HOME_PENALTY_YARDS_STD,
+                'HOME_PENALTY_YARDS_MAX': HOME_PENALTY_YARDS_MAX,
+                'HOME_PENALTY_YARDS_MIN': HOME_PENALTY_YARDS_MIN,
+                'HOME_3RD_DOWN_MEAN': HOME_3RD_DOWN_MEAN, 
+                'HOME_3RD_DOWN_STD': HOME_3RD_DOWN_STD,
+                'HOME_3RD_DOWN_MAX': HOME_3RD_DOWN_MAX,
+                'HOME_3RD_DOWN_MIN': HOME_3RD_DOWN_MIN,
+                'HOME_3RD_DOWN_ATT_MEAN': HOME_3RD_DOWN_ATT_MEAN, 
+                'HOME_3RD_DOWN_ATT_STD': HOME_3RD_DOWN_ATT_STD,
+                'HOME_3RD_DOWN_ATT_MAX': HOME_3RD_DOWN_ATT_MAX,
+                'HOME_3RD_DOWN_ATT_MIN': HOME_3RD_DOWN_ATT_MIN,
+                'HOME_3RD_DOWN_CONV_MEAN': HOME_3RD_DOWN_CONV_MEAN, 
+                'HOME_3RD_DOWN_CONV_STD': HOME_3RD_DOWN_CONV_STD,
+                'HOME_3RD_DOWN_CONV_MAX': HOME_3RD_DOWN_CONV_MAX,
+                'HOME_3RD_DOWN_CONV_MIN': HOME_3RD_DOWN_CONV_MIN,
+                'HOME_3RD_DOWN_AGAINST_MEAN': HOME_3RD_DOWN_AGAINST_MEAN,
+                'HOME_3RD_DOWN_AGAINST_STD': HOME_3RD_DOWN_AGAINST_STD,
+                'HOME_3RD_DOWN_AGAINST_MAX': HOME_3RD_DOWN_AGAINST_MAX,
+                'HOME_3RD_DOWN_AGAINST_MIN': HOME_3RD_DOWN_AGAINST_MIN,
+                'HOME_3RD_DOWN_ATT_AGAINST_MEAN': HOME_3RD_DOWN_ATT_AGAINST_MEAN,
+                'HOME_3RD_DOWN_ATT_AGAINST_STD': HOME_3RD_DOWN_ATT_AGAINST_STD,
+                'HOME_3RD_DOWN_ATT_AGAINST_MAX': HOME_3RD_DOWN_ATT_AGAINST_MAX,
+                'HOME_3RD_DOWN_ATT_AGAINST_MIN': HOME_3RD_DOWN_ATT_AGAINST_MIN,
+                'HOME_3RD_DOWN_CONV_AGAINST_MEAN': HOME_3RD_DOWN_CONV_AGAINST_MEAN,
+                'HOME_3RD_DOWN_CONV_AGAINST_STD': HOME_3RD_DOWN_CONV_AGAINST_STD,
+                'HOME_3RD_DOWN_CONV_AGAINST_MAX': HOME_3RD_DOWN_CONV_AGAINST_MAX,
+                'HOME_3RD_DOWN_CONV_AGAINST_MIN': HOME_3RD_DOWN_CONV_AGAINST_MIN,
+                'HOME_TOP_MEAN': HOME_TOP_MEAN, 
+                'HOME_TOP_STD': HOME_TOP_STD,
+                'HOME_TOP_MAX': HOME_TOP_MAX,
+                'HOME_TOP_MIN': HOME_TOP_MIN,
                 'HOME_PASS_COMP_MEAN': 0, 
                 'HOME_PASS_COMP_STD': 0,
                 'HOME_PASS_COMP_MAX': 0,
@@ -1288,14 +1997,90 @@ for year in years:
                 'HOME_PASS_YDSSCRM_STD': 0,
                 'HOME_PASS_YDSSCRM_MAX': 0,
                 'HOME_PASS_YDSSCRM_MIN': 0,
-                'HOME_PASS_BIG_GAME_W': 0, # spread of -2.5 or tighter
+                'HOME_PASS_COMP_CAREER_MEAN': 0, 
+                'HOME_PASS_COMP_CAREER_STD': 0,
+                'HOME_PASS_COMP_CAREER_MAX': 0,
+                'HOME_PASS_COMP_CAREER_MIN': 0,
+                'HOME_PASS_ATT_CAREER_MEAN': 0, 
+                'HOME_PASS_ATT_CAREER_STD': 0,
+                'HOME_PASS_ATT_CAREER_MAX': 0,
+                'HOME_PASS_ATT_CAREER_MIN': 0,
+                'HOME_PASS_YDS_CAREER_MEAN': 0, 
+                'HOME_PASS_YDS_CAREER_STD': 0,
+                'HOME_PASS_YDS_CAREER_MAX': 0,
+                'HOME_PASS_YDS_CAREER_MIN': 0,
+                'HOME_PASS_1D_CAREER_MEAN': 0, 
+                'HOME_PASS_1D_CAREER_STD': 0,
+                'HOME_PASS_1D_CAREER_MAX': 0,
+                'HOME_PASS_1D_CAREER_MIN': 0,
+                'HOME_PASS_1DPCT_CAREER_MEAN': 0, 
+                'HOME_PASS_1DPCT_CAREER_STD': 0,
+                'HOME_PASS_1DPCT_CAREER_MAX': 0,
+                'HOME_PASS_1DPCT_CAREER_MIN': 0,
+                'HOME_PASS_IAY_CAREER_MEAN': 0, 
+                'HOME_PASS_IAY_CAREER_STD': 0,
+                'HOME_PASS_IAY_CAREER_MAX': 0,
+                'HOME_PASS_IAY_CAREER_MIN': 0,
+                'HOME_PASS_IAYPA_CAREER_MEAN': 0, 
+                'HOME_PASS_IAYPA_CAREER_STD': 0,
+                'HOME_PASS_IAYPA_CAREER_MAX': 0,
+                'HOME_PASS_IAYPA_CAREER_MIN': 0,
+                'HOME_PASS_CAY_CAREER_MEAN': 0, 
+                'HOME_PASS_CAY_CAREER_STD': 0,
+                'HOME_PASS_CAY_CAREER_MAX': 0,
+                'HOME_PASS_CAY_CAREER_MIN': 0,
+                'HOME_PASS_CAYCMP_CAREER_MEAN': 0, 
+                'HOME_PASS_CAYCMP_CAREER_STD': 0,
+                'HOME_PASS_CAYCMP_CAREER_MAX': 0,
+                'HOME_PASS_CAYCMP_CAREER_MIN': 0,
+                'HOME_PASS_CAYPA_CAREER_MEAN': 0, 
+                'HOME_PASS_CAYPA_CAREER_STD': 0,
+                'HOME_PASS_CAYPA_CAREER_MAX': 0,
+                'HOME_PASS_CAYPA_CAREER_MIN': 0,
+                'HOME_PASS_YAC_CAREER_MEAN': 0, 
+                'HOME_PASS_YAC_CAREER_STD': 0,
+                'HOME_PASS_YAC_CAREER_MAX': 0,
+                'HOME_PASS_YAC_CAREER_MIN': 0,
+                'HOME_PASS_YACCMP_CAREER_MEAN': 0, 
+                'HOME_PASS_YACCMP_CAREER_STD': 0,
+                'HOME_PASS_YACCMP_CAREER_MAX': 0,
+                'HOME_PASS_YACCMP_CAREER_MIN': 0,
+                'HOME_PASS_BADTH_CAREER_MEAN': 0, 
+                'HOME_PASS_BADTH_CAREER_STD': 0,
+                'HOME_PASS_BADTH_CAREER_MAX': 0,
+                'HOME_PASS_BADTH_CAREER_MIN': 0,
+                'HOME_PASS_SK_CAREER_MEAN': 0, 
+                'HOME_PASS_SK_CAREER_STD': 0,
+                'HOME_PASS_SK_CAREER_MAX': 0,
+                'HOME_PASS_SK_CAREER_MIN': 0,
+                'HOME_PASS_BLITZ_CAREER_MEAN': 0, 
+                'HOME_PASS_BLITZ_CAREER_STD': 0,
+                'HOME_PASS_BLITZ_CAREER_MAX': 0,
+                'HOME_PASS_BLITZ_CAREER_MIN': 0,
+                'HOME_PASS_HRRY_CAREER_MEAN': 0, 
+                'HOME_PASS_HRRY_CAREER_STD': 0,
+                'HOME_PASS_HRRY_CAREER_MAX': 0,
+                'HOME_PASS_HRRY_CAREER_MIN': 0,
+                'HOME_PASS_HITS_CAREER_MEAN': 0, 
+                'HOME_PASS_HITS_CAREER_STD': 0,
+                'HOME_PASS_HITS_CAREER_MAX': 0,
+                'HOME_PASS_HITS_CAREER_MIN': 0,
+                'HOME_PASS_PRSS_CAREER_MEAN': 0, 
+                'HOME_PASS_PRSS_CAREER_STD': 0,
+                'HOME_PASS_PRSS_CAREER_MAX': 0,
+                'HOME_PASS_PRSS_CAREER_MIN': 0,
+                'HOME_PASS_PRSSPCT_CAREER_MEAN': 0, 
+                'HOME_PASS_PRSSPCT_CAREER_STD': 0,
+                'HOME_PASS_PRSSPCT_CAREER_MAX': 0,
+                'HOME_PASS_PRSSPCT_CAREER_MIN': 0,
+                'HOME_PASS_BIG_GAME_W': 0,
                 'HOME_PASS_BIG_GAME_L': 0,
                 'HOME_PASS_PLAYOFF_W': 0,
                 'HOME_PASS_PLAYOFF_L': 0,
                 'HOME_PASS_CHAMP_W': 0,
                 'HOME_PASS_CHAMP_L': 0,
                 'Home-Team-Win': home_team_win,
-                'DIV_MATCH': 0,
+                'DIV_MATCH': get_div_match(vis, home),
                 'SCORE': int(AWAY_SCORE)+int(HOME_SCORE),
                 'OU': float(OU),
                 'OU_COVER': OU_COVER,
